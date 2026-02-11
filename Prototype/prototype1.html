@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Algorithmic Oracle — MVP</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      /* Exact palette */
+      --yellow:#E6BB3D; --orange:#D98833; --red:#EA1F17;
+      --olive:#8C972C;  --blue:#4997FC;  --mauve:#AD7C79;
+
+      /* Theme tokens */
+      --bg:#FFFFFF; --panel:#FFFFFF;
+      --ink:#1c1f24; --muted:#5b6470;
+      --accent:var(--blue);
+      --ring: 0 0 0 3px rgba(73,151,252,.35);
+      --mystic:#8A5CFF; /* used in title's existing glow */
+      --header-h: 0px;  /* set precisely by JS when feed is active */
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%; overflow-x:hidden;}
+    body{
+      margin:0;
+      font-family:"Montserrat", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; /* default everywhere */
+      background:var(--bg);
+      color:var(--ink);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    button, input, select, textarea { font-family: inherit; }
+    a{color:var(--accent)}
+
+    .wrap{max-width:960px; margin:0 auto; padding:24px}
+    .card{background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:16px; box-shadow:0 8px 24px rgba(0,0,0,.06);}
+    .panel{padding:24px}
+    .muted{color:var(--muted)}
+    .center{text-align:center}
+    .bar{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .hidden{display:none}
+
+    /* ===== DO NOT CHANGE: Title settings as provided ===== */
+    header{
+      width:100vw;
+      margin-left:calc(50% - 50vw);
+      display:flex;
+      justify-content:center;
+      padding:28px 0 16px;
+    }
+    h1.title{
+      margin:0;
+      display:inline-block;
+      text-align:center;
+      white-space:nowrap;
+      max-width:min(92vw, 1200px);
+      font-family:"Cinzel Decorative","Bodoni Moda",serif;
+      font-weight:900; letter-spacing:.02em;
+      font-size:clamp(40px, 7vw, 60px);
+      line-height:1.02;
+      color:#FFFFFF;
+      text-shadow:
+        0 0 8px  color-mix(in srgb, var(--mystic) 60%, transparent),
+        0 0 22px color-mix(in srgb, var(--mystic) 45%, transparent),
+        0 0 40px color-mix(in srgb, var(--mystic) 35%, transparent);
+    }
+    /* ===== End title block ===== */
+
+    /* Landing hero text */
+    h2{margin:0 0 8px 0}
+    #landing h2{
+      font-weight:700;
+      letter-spacing:0.12em;
+      font-size:clamp(22px, 2.6vw, 36px);
+      text-transform:none;
+    }
+    #landing p.center.muted{
+      font-weight:600;
+      letter-spacing:0.18em;
+      font-size:clamp(14px, 1.6vw, 20px);
+    }
+
+    /* CTA buttons */
+    .btn{
+      appearance:none; border:none; padding:12px 16px; border-radius:12px; cursor:pointer;
+      color:#031623; font-weight:700;
+      background:linear-gradient(180deg, var(--accent), #2f7ef6);
+    }
+    .btn.secondary{background:#f5f7fb; border:1px solid rgba(0,0,0,.08); color:var(--ink)}
+    .btn:disabled{opacity:.5; cursor:not-allowed}
+
+    /* Start + Start Over buttons = yellow */
+    #startBtn, #resetBtn{
+      background:#E6BB3D !important;
+      color:#000 !important;
+      box-shadow:0 6px 14px rgba(0,0,0,.12);
+    }
+    #startBtn:hover, #resetBtn:hover,
+    #startBtn:focus-visible, #resetBtn:focus-visible{
+      background:#D7AA2E !important;
+      color:#000 !important;
+    }
+    #startBtn:disabled{ opacity:.5; cursor:not-allowed; box-shadow:none; }
+
+    /* "Get your tarot" button = red (visual style retained) */
+    #toTarot{
+      background:#EA1F17 !important;
+      color:#fff !important;
+      border:none !important;
+      box-shadow:0 6px 14px rgba(0,0,0,.12);
+    }
+    #toTarot:hover, #toTarot:focus-visible{
+      background:#CC1A12 !important; color:#fff !important;
+    }
+
+    /* Vibe grid (2×2 desktop, 1×4 small) */
+    .vibe-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:18px;
+      margin-top:18px;
+    }
+    @media (max-width:560px){ .vibe-grid{ grid-template-columns:1fr; } }
+
+    /* Big vibe buttons — black labels → white on hover/selected */
+    .vibeBtn{
+      --tile:#f7f9fc; /* overridden by tone classes */
+      display:flex; align-items:center; justify-content:center; position:relative;
+      padding:26px; min-height:200px; border-radius:20px;
+      border:1px solid rgba(0,0,0,.12); background:var(--tile);
+      color:#000 !important; font-weight:700; letter-spacing:0.12em;
+      font-size:28px; line-height:1.1; text-align:center; cursor:pointer; user-select:none;
+      transition: transform .08s ease, box-shadow .25s ease, border-color .2s ease, color .15s ease;
+    }
+    .vibeBtn[aria-pressed="true"],
+    .vibeBtn:hover, .vibeBtn:focus-visible{ color:#fff !important; }
+    .vibeBtn:hover, .vibeBtn:focus-visible{
+      transform:translateY(-1.5px);
+      border-color:rgba(0,0,0,.25);
+      box-shadow:0 0 0 6px rgba(0,0,0,.06), 0 14px 34px rgba(0,0,0,.18);
+      outline:none; text-shadow:none;
+    }
+
+    /* Exact colors for each tile */
+    .tone-live_laugh_leap{   --tile: var(--olive); }
+    .tone-fomo_whiplash{     --tile: var(--blue);  }
+    .tone-vulnerability_irony{--tile: var(--red);   }
+    .tone-melancholy_loop{   --tile: var(--mauve); }
+
+    /* Feed */
+    .feed{display:grid; gap:12px; max-height:62vh; overflow:auto; padding:4px; margin-top:8px}
+    .post{display:grid; gap:8px; padding:14px; border-radius:14px; border:1px solid rgba(0,0,0,.08); background:#ffffff}
+    .badge{font-size:11px; padding:3px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.08); color:var(--muted); background:#f1f5f9}
+    .media{background:#eef3fb; border-radius:10px; border:1px dashed rgba(0,0,0,.08); display:grid; place-items:center; color:var(--muted)}
+    .ghost{opacity:.8}
+    .post .actions{display:flex; gap:8px}
+
+    /* Tarot (image card + centered title + paragraphs) */
+    .tarot{display:grid; gap:14px; place-items:center; padding:24px}
+    .tarot-card{
+      width:493px; height:700px; border-radius:20px; padding:0;
+      background:#fff; border:1px solid rgba(0,0,0,.10);
+      box-shadow:0 15px 40px rgba(0,0,0,.08);
+      overflow:hidden; display:block;
+    }
+    .tarot-card img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .tarot-title{
+      margin:6px 0 4px;
+      text-align:center;
+      font-weight:800;
+      letter-spacing:.04em;
+      font-size:clamp(20px, 2.6vw, 28px);
+    }
+
+    .tarot-expl{
+      max-width:680px; line-height:1.5; font-size:18px; color:var(--ink);
+      background:#fff; border:1px solid rgba(0,0,0,.08);
+      box-shadow:0 8px 24px rgba(0,0,0,.06);
+      border-radius:14px; padding:18px 20px;
+    }
+    .tarot-expl p{ margin:0 0 12px 0; }
+    .tarot-expl p:last-child{ margin-bottom:0; }
+    .tarot-expl strong{ font-weight:800; }
+
+    footer{opacity:.8; font-size:12px; margin-top:12px}
+
+    /* Full-page starry background layer */
+    .bg-stars{
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: #000 url("./assets/bg/stars.gif") repeat center;
+      background-size: 320px 320px;
+      image-rendering: auto;
+      opacity: 0.9;
+    }
+    .bg-stars::after{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(ellipse at 50% 20%, rgba(0,0,0,.15), rgba(0,0,0,.45));
+    }
+    @media (prefers-reduced-motion: reduce){
+      .bg-stars{ background-image: url("./assets/bg/stars.gif"); }
+    }
+
+    /* LANDING over the stars */
+    #landing.card{ background:transparent !important; border:none !important; box-shadow:none !important; }
+    #landing h2{
+      color:#ffffff !important;
+      text-shadow:0 2px 6px rgba(0,0,0,.55), 0 0 14px rgba(138,92,255,.35);
+    }
+    #landing p.center.muted{
+      color:#D5D9FF !important;
+      text-shadow:0 1px 4px rgba(0,0,0,.45), 0 0 10px rgba(138,92,255,.25);
+    }
+    #landing #status{ display:none !important; }
+    #landing .bar{ justify-content:flex-end !important; }
+
+    /* ===== FEED ONLY POLISH ===== */
+    #feedView.card{ background:transparent; border:none; box-shadow:none; }
+    #feedView .feed{
+      padding:8px;
+      backdrop-filter: none;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,.35) transparent;
+    }
+    #feedView .feed::-webkit-scrollbar{ height:10px; width:10px; }
+    #feedView .feed::-webkit-scrollbar-thumb{
+      background:rgba(255,255,255,.35); border-radius:999px;
+    }
+    #feedView .post{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      color:#fff;
+    }
+    .post-header{ display:flex; align-items:center; gap:10px; }
+    .post-header .avatar{
+      width:34px; height:34px; border-radius:999px;
+      background: radial-gradient(circle at 30% 30%, #fff, #bbb);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.35);
+      flex:0 0 auto;
+    }
+    .post-header .meta{ font-size:13px; color:#D5D9FF; line-height:1.2; }
+    .post-header .meta .name{ color:#fff; font-weight:700; letter-spacing:.02em; }
+    #feedView .post h4{ margin:2px 0 0; font-size:20px; line-height:1.25; color:#fff; }
+    #feedView .post p.muted{ color:#C9CEFF; }
+    #feedView .post .media{
+      background:
+        radial-gradient(120% 180% at 80% 0%, rgba(138,92,255,.35), transparent 60%),
+        radial-gradient(140% 160% at 0% 100%, rgba(73,151,252,.30), transparent 50%),
+        rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.2);
+      color:#E8EBFF;
+    }
+    #feedView .post .actions .btn.secondary{
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.25);
+    }
+    #feedView .post .actions .btn.secondary:hover,
+    #feedView .post .actions .btn.secondary:focus-visible{
+      background:rgba(255,255,255,.22);
+      transform:translateY(-1px);
+    }
+    #feedView .bar > .muted{ display:none !important; }
+
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
+    /* Saved state: make the Save button visibly "on" */
+    #feedView .post .actions [data-act="save"][aria-pressed="true"]{
+      background: rgba(255,255,255,.28) !important;
+      border-color: rgba(255,255,255,.55) !important;
+      color: #fff !important;
+      font-weight: 800 !important;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.20);
+      transform: translateY(-1px);
+    }
+    #feedView .post .actions [data-act="save"][aria-pressed="true"]::before{
+      content: "🔖 ";
+    }
+
+    /* === Exact-fit layout ONLY when feed is active === */
+    body.lock-scroll{
+      overflow:hidden;               /* stop page scrolling */
+      height:100vh;
+    }
+    body.lock-scroll > .wrap{
+      height: calc(100vh - var(--header-h));
+      overflow:hidden;               /* contain the inner scroller */
+    }
+    body.lock-scroll #feedView{
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      position:relative;             /* anchor the floating Tarot button */
+    }
+    body.lock-scroll #feedView .feed{
+      flex:1 1 auto;
+      min-height:0;
+      overflow:auto;
+      max-height:none !important;    /* override earlier caps (62vh) */
+      overscroll-behavior:contain;
+    }
+
+    /* === Float "Get your tarot" at bottom-right; hidden until scrolled to end === */
+    #feedView{ position:relative; }
+    #toTarot{
+      position:absolute;
+      right:16px;
+      bottom:16px;
+      display:none;                  /* hidden by default */
+      transform: translateY(8px);
+      opacity:0;
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events:none;           /* ignore interactions while hidden */
+    }
+    #toTarot.is-visible{
+      display:inline-block;
+      opacity:1;
+      transform: translateY(0);
+      pointer-events:auto;
+    }
+    /* Prevent the top bar layout from reserving space for the button */
+    #feedView .bar > #toTarot{ position:absolute; }
+
+    /* === Fill media with actual images/videos when present === */
+    #feedView .post .media img,
+    #feedView .post .media video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      border-radius:8px;
+    }
+    /* Make the media box a positioning context */
+    #feedView .post .media{ position:relative; }
+
+    /* Mute/unmute button overlay */
+    .mute-toggle{
+      position:absolute;
+      right:8px; bottom:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.45);
+      background:rgba(0,0,0,.35);
+      color:#fff; font-weight:800; cursor:pointer;
+      backdrop-filter: blur(4px);
+    }
+    .mute-toggle:hover{ background:rgba(0,0,0,.5); }
+
+    /* Base badge (existing look) */
+    #feedView .badge{
+      font-size:11px; padding:3px 8px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.10);
+      color:#E8EBFF;
+    }
+
+    /* Make link-badges look and feel clickable & accessible */
+    #feedView .badge-link{
+      text-decoration:none;
+      display:inline-block;
+      transition:background .15s ease, transform .08s ease, box-shadow .15s ease;
+    }
+    #feedView .badge-link:hover{
+      background:rgba(255,255,255,.18);
+    }
+    #feedView .badge-link:active{
+      transform:translateY(1px);
+    }
+    #feedView .badge-link:focus-visible{
+      outline:none;
+      box-shadow:0 0 0 3px rgba(73,151,252,.35); /* your --ring color */
+    }
+
+    /* Fullscreen lightbox */
+    .lightbox{
+      position:fixed; inset:0; z-index:9999;
+      background:rgba(0,0,0,.78);
+      display:flex; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .lightbox.hidden{ display:none; }
+
+   /* Frame fills most of the screen but doesn't force media to stretch */
+.lb-frame{
+  position:relative;
+  width:96vw;
+  height:96dvh;                 /* dvh handles mobile browser chrome */
+  max-width:96vw;
+  max-height:96dvh;
+  display:flex;                 /* center media */
+  align-items:center;
+  justify-content:center;
+  padding:0;                    /* no extra padding that shrinks space */
+  border-radius:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  background:transparent;
+  overflow:hidden;              /* keep UI bits inside */
+}
+
+/* Media should NEVER overflow: contain within the frame */
+.lb-media{
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  object-fit:contain;           /* letterbox instead of crop */
+  display:block;                /* always block in the lightbox */
+  background:#000;              /* clean backdrop for letterboxing */
+  border-radius:12px;
+}
+
+
+    .lb-close{
+      position:absolute; top:16px; right:16px;
+      appearance:none; border:1px solid rgba(255,255,255,.35);
+      background:rgba(0,0,0,.45);
+      color:#fff; font-size:18px; line-height:1; border-radius:999px;
+      padding:8px 10px; cursor:pointer;
+      backdrop-filter: blur(4px);
+    }
+    .lb-close:hover{ background:rgba(0,0,0,.6); }
+
+    /* Don’t let clicks “through” the modal */
+    .lightbox, .lb-frame{ pointer-events:auto; }
+
+  </style>
+</head>
+<body>
+  <div class="bg-stars" aria-hidden="true"></div>
+  <header>
+    <h1 class="title">The Algorithmic Oracle</h1>
+  </header>
+
+  <div class="wrap">
+    <!-- LANDING -->
+    <section id="landing" class="card panel">
+      <h2 class="center" style="margin-top:4px">Let the feed read you.</h2>
+      <p class="center muted">Pick How You Want to Feel</p>
+
+      <div class="vibe-grid" id="vibeChips" role="group" aria-label="Pick your vibe"></div>
+
+      <div style="height:14px"></div>
+      <div class="bar">
+        <span class="muted" id="status">No vibe selected</span>
+        <button class="btn" id="startBtn" disabled>Start</button>
+      </div>
+    </section>
+
+    <!-- FEED -->
+    <section id="feedView" class="card panel hidden">
+      <div class="bar" style="margin-bottom:8px">
+        <div class="muted">Now tuning to: <strong id="currentVibeLabel">—</strong></div>
+        <button class="btn secondary" id="toTarot">Get your tarot</button>
+      </div>
+      <div class="feed" id="feed"></div>
+      <footer class="muted">We don’t store anything. This session lives in your browser.</footer>
+    </section>
+
+    <!-- TAROT -->
+    <section id="tarotView" class="card panel hidden">
+      <div class="tarot">
+        <!-- Image-only card -->
+        <div class="tarot-card" id="tarotCard">
+          <!-- Default image; JS swaps based on vibe -->
+          <img id="tarotImg" src="./assets/cards/death.jpg" alt="Tarot card">
+        </div>
+
+        <!-- Action buttons -->
+        <div class="tarot-actions" style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+          <button class="btn secondary" id="seeReceipts">See receipts</button>
+          <button class="btn" id="resetBtn">Start over</button>
+        </div>
+
+        <!-- Centered card title under image -->
+        <h3 class="tarot-title" id="tarotTitleBelow"></h3>
+
+        <!-- Explanation below the title -->
+        <div class="tarot-expl" id="tarotExpl"></div>
+
+        <footer class="muted">The Oracle is a mirror, not a diagnosis. Take breaks. Touch grass.</footer>
+      </div>
+    </section>
+
+    <!-- RECEIPTS -->
+    <section id="receipts" class="card panel hidden">
+      <h3>Session receipts</h3>
+      <p class="muted" id="receiptSummary"></p>
+      <ol id="receiptList"></ol>
+      <div class="bar" style="margin-top:8px">
+        <span></span>
+        <button class="btn secondary" id="closeReceipts">Close</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Lightbox for full-size media (moved ABOVE script) -->
+  <div id="lightbox" class="lightbox hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <button class="lb-close" aria-label="Close (Esc)">✕</button>
+    <div class="lb-frame">
+      <video id="lbVideo" class="lb-media" controls playsinline></video>
+      <img id="lbImg" class="lb-media" alt="">
+    </div>
+  </div>
+
+  <script>
+    // ---------- Minimal data with image paths ----------
+    // Place your images in ./assets/feed/ and update filenames below.
+    const VIBES = [
+      {id:'live_laugh_leap',      label:'Live Laugh Leap'},          // Fool
+      {id:'fomo_whiplash',        label:'Rare Aura'},     // Wheel
+      {id:'vulnerability_irony',  label:'Vulnerability masked as irony'}, // Tower
+      {id:'melancholy_loop',      label:'Melancholy Loop'}           // Death
+    ];
+
+    const POSTS = {
+      live_laugh_leap:[
+        {
+          title:'',
+          body:'trust fall with the internet',
+          badge:'',
+          img:'./assets/feed/fool/fool1.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'Because you like optimism posts',
+          img:'./assets/feed/fool/fool2.mp4',
+          alt:'Sunlit photo suggesting new beginnings',
+          creditUrl:'https://www.instagram.com/p/DQW0i7nAF8b/',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/fool/fool3.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/fool/fool4.jpg',
+          alt:'S',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/fool/fool5.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/fool/fool6.mp4',
+          alt:'',
+          creditUrl:'https://www.instagram.com/p/DPQLYs-EVJL',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/fool/fool7.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/fool/fool8.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/fool/fool9.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/fool/fool10.mp4',
+          alt:'',
+          creditUrl:'https://www.instagram.com/p/DPCBtUdiemS',
+          creditLabel:'Original post'
+        },
+      ],
+      fomo_whiplash:[
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/wheel/wheel1.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          video:'./assets/feed/wheel/wheel2.mp4',
+          alt:'',
+          creditUrl:'https://www.instagram.com/p/DQIE5fOkhQQ/',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          video:'./assets/feed/wheel/wheel3.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          video:'./assets/feed/wheel/wheel4.mp4',
+          alt:'',
+          creditUrl:'https://www.instagram.com/p/DP_x8wHiPME/',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          video:'./assets/feed/wheel/wheel5.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          video:'./assets/feed/wheel/wheel6.jpg',
+          alt:'H',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          video:'./assets/feed/wheel/wheel7.mp4',
+          alt:'',
+          creditUrl:'https://www.instagram.com/p/DKR8vDwS3K5/',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          video:'./assets/feed/wheel/wheel8.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          video:'./assets/feed/wheel/wheel9.mp4',
+          alt:'',
+          creditUrl:'https://www.instagram.com/p/DQMerSJAGyl',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          video:'./assets/feed/wheel/wheel10.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+      ],
+      vulnerability_irony:[
+        {
+          title:'confession: i’m fine lol',
+          body:'(i am not fine)',
+          badge:'Because you paused on confessions',
+          img:'./assets/feed/tower/tower1.jpg',
+          alt:'',
+          creditUrl:'https://x.com/onlyyagirl_/status/1981148680377028841',
+          creditLabel:'Original post'
+        },
+        {
+          title:'if it’s breaking, i’m broadcasting',
+          body:'meltdown but make it content',
+          badge:'Because you watch chaos streams',
+          img:'./assets/feed/tower/tower2.mp4',
+          alt:'',
+          creditUrl:'https://www.instagram.com/p/DESn5I6vWIH/',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/tower/tower3.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/tower/tower4.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/tower/tower5.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/tower/tower6.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/tower/tower7.mp4',
+          alt:'',
+          creditUrl:'https://x.com/tannertan36/status/1955073200141799691',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/tower/tower8.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/tower/tower9.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/tower/tower10.mp4',
+          alt:'',
+          creditUrl:'https://www.instagram.com/p/DPt3x6-CBGQ',
+          creditLabel:'Original post'
+        },
+      ],
+      melancholy_loop:[
+        {
+          title:'breaking: future cancelled due to past',
+          body:'more at 11',
+          badge:'',
+          img:'./assets/feed/death/death1.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'Because you rewatch bleak posts',
+          img:'./assets/feed/death/death2.mp4',
+          alt:'',
+          creditUrl:'https://www.instagram.com/p/DO-1rSOj_u7',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/death/death3.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/death/death4.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'doomscrolling as a hobby',
+          body:'level 47 unlocked',
+          badge:'',
+          img:'./assets/feed/death/death5.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/death/death6.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/death/death7.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/death/death8.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/death/death9.jpg',
+          alt:'',
+          creditUrl:'',
+          creditLabel:'Original post'
+        },
+        {
+          title:'',
+          body:'',
+          badge:'',
+          img:'./assets/feed/death/death10.mp4',
+          alt:'',
+          creditUrl:'https://www.instagram.com/p/DPxpqAEjthK',
+          creditLabel:'Original post'
+        },
+      ],
+    };
+
+    // ---- Card assets & copy ----
+    const CARD_IMAGE = {
+      live_laugh_leap:      './assets/cards/thefool.jpg',     // The Fool
+      fomo_whiplash:        './assets/cards/wheeloffortune.jpg', // Wheel of Fortune
+      vulnerability_irony:  './assets/cards/thetower.jpg',    // The Tower
+      melancholy_loop:      './assets/cards/death.jpg'        // Death
+    };
+
+    const CARD_TITLE = {
+      melancholy_loop:      "The Abyss Dweller",       // Death
+      live_laugh_leap:      "The Click-Now Believer",  // The Fool
+      fomo_whiplash:        "The Relapse Ritualist",   // Wheel of Fortune
+      vulnerability_irony:  "Live Laugh Lore-Drop"     // The Tower
+    };
+
+    const EXPLANATION_HTML = {
+      melancholy_loop: `
+        <p>Lives in the For You page basement where everything hits too hard. Chronically online, doom-feeds as a lifestyle: depressive edits, late-night threads, grief memes that start funny and end existential. Overwhelm curdles into anxious posting, then—snap—“healing era” rebrand inside 48 hours: sage emoji, beige aesthetic, soft-font affirmations. The cycle isn’t change; it’s costume changes for the same mood.</p>
+        <p><strong>Signature behaviors:</strong> algorithmic spiral into bleak niches; marathon story dumps at 2–4am; sudden silence; cosmetic rebirth (new handle, “clean slate,” identical takes).</p>
+        <p><strong>Feed tells:</strong> “this ruined me” captions; sad-song reels; quotes on textured paper; “protecting my peace” while bookmarking chaos.</p>
+        <p><strong>Self-image vs external read:</strong> sees themselves as honest about pain and growth; others see pattern-spotting brilliance trapped in a self-authored abyss.</p>
+      `,
+      live_laugh_leap: `
+        <p>Curiosity cosplaying as competence. New-account energy that never quite ages out: taps every feature day one, reposts giveaways, trusts DM links from “brand collabs,” and narrates discoveries like they invented Stories. Identity is fluid because they haven’t read the settings menu—handles, bios, and aesthetics shift weekly. They crowd-tag big accounts, chase shoutouts, and overshare personal data for “fun quizzes.”</p>
+        <p><strong>Signature behaviors:</strong> chaotic posting tempo; first to try beta features; “omg this blew up” on 312 likes; public learning curves (“didn’t know you could do this?!?”).</p>
+        <p><strong>Feed tells:</strong> exclamation-point captions; glittery Canva graphics; mismatched filters; link-in-bio graveyard.</p>
+        <p><strong>Self-image vs external read:</strong> sees themselves as brave and experimental; others see them as sweet, gullible, and one click away from another scam.</p>
+      `,
+      fomo_whiplash: `
+        <p>Deletes the app every Sunday; reinstalls by Tuesday lunch. Calls it “digital hygiene” like a skincare routine for the soul. Life spikes trigger binge-scrolls; calm days trigger declarations of abstinence. Their narrative is that fate (read: the algorithm) chooses winners and they’re riding the roulette. Activity is tidal—viral sprint, tumbleweed crawl, repeat.</p>
+        <p><strong>Signature behaviors:</strong> uninstall on Sundays, reinstall by Tuesday; “I’m back (again)” arcs; conspiracy of “shadowbans”; streaky engagement graphs.</p>
+        <p><strong>Feed tells:</strong> reflective captions about balance; repentance carousels; re-entry threads asking “what did I miss?”; app icon tucked in a folder named “Work.”</p>
+        <p><strong>Self-image vs external read:</strong> sees themselves as self-aware and intentional; others clock the yo-yo and quietly mute until the next return.</p>
+      `,
+      vulnerability_irony: `
+        <p><strong>One Liner:</strong> “If it’s breaking, you’re broadcasting.”</p>
+        <p>Crisis as content strategy. Public spirals are scheduled like drops: lyric-vagueposts, break-up reels, subtweet storms, screenshots of DMs with dramatic cropping. Any rupture—friend fallouts, creator beefs, policy changes—gets a trailer, a season, and a reunion special. The spectacle pulls numbers; the crater pulls relationships.</p>
+        <p><strong>Signature behaviors:</strong> confessional captions with a twist; calamity livestreams; “i’m fine lol” posts.</p>
+        <p><strong>Feed tells:</strong> follower cliffs, comment wars, subscriber-only discourse, alliances formed and dissolved in 24 hours.</p>
+        <p><strong>Self-image vs external read:</strong> sees themselves as truth-teller and survivor; others see a demolition channel with feelings.</p>
+      `
+    };
+
+    // ---------- State ----------
+    const state = {
+      vibe:null, events:[], postsInteracted:0, scrollDepth:0, startedAt:null,
+      liked:new Set(), saved:new Set()
+    };
+
+    // ---------- Elements ----------
+    const el = id=>document.getElementById(id);
+    const landing = el('landing');
+    const feedView = el('feedView');
+    const tarotView = el('tarotView');
+    const receipts = el('receipts');
+
+    // ---------- Helpers: exact-fit page lock for feed ----------
+    function updateHeaderHeight(){
+      const h = document.querySelector('header')?.offsetHeight || 0;
+      document.documentElement.style.setProperty('--header-h', h + 'px');
+    }
+    function lockPageForFeed(){
+      document.body.classList.add('lock-scroll');
+      updateHeaderHeight();
+      window.addEventListener('resize', updateHeaderHeight);
+    }
+    function unlockPageFromFeed(){
+      document.body.classList.remove('lock-scroll');
+      window.removeEventListener('resize', updateHeaderHeight);
+    }
+
+    // ----- Lightbox helpers -----
+    const lb     = document.getElementById('lightbox');
+    const lbVid  = document.getElementById('lbVideo');
+    const lbImg  = document.getElementById('lbImg');
+    const lbClose= lb.querySelector('.lb-close');
+
+    function openLightboxVideo(src){
+      if(!src) return;
+      lbImg.style.display = 'none';
+      lbVid.style.display = 'block';
+      lbVid.src = src;
+      lb.classList.remove('hidden');
+      lbVid.muted = false;
+      lbVid.controls = true;
+      lbVid.play().catch(()=>{});
+      document.addEventListener('keydown', onLbEsc);
+    }
+
+    function openLightboxImage(src, alt=''){
+      if(!src) return;
+      lbVid.pause(); lbVid.removeAttribute('src'); lbVid.load();
+      lbVid.style.display = 'none';
+      lbImg.style.display = 'block';
+      lbImg.src = src; lbImg.alt = alt || '';
+      lb.classList.remove('hidden');
+      document.addEventListener('keydown', onLbEsc);
+    }
+
+    function closeLightbox(){
+      lb.classList.add('hidden');
+      lbVid.pause(); lbVid.removeAttribute('src'); lbVid.load();
+      document.removeEventListener('keydown', onLbEsc);
+    }
+    function onLbEsc(e){ if(e.key === 'Escape') closeLightbox(); }
+
+    lb.addEventListener('click', (e)=>{
+      if(e.target === lb || e.target === lbClose) closeLightbox();
+    });
+
+    // ---------- Helpers: Tarot button visibility ----------
+    function showTarotBtn(){ el('toTarot').classList.add('is-visible'); }
+    function hideTarotBtn(){ el('toTarot').classList.remove('is-visible'); }
+    function updateTarotBtnVisibility(){
+      const host = el('feed'); // scrollable container
+      if(!host) return;
+      const atBottom = host.scrollTop + host.clientHeight >= host.scrollHeight - 8; // 8px tolerance
+      if(atBottom) showTarotBtn(); else hideTarotBtn();
+    }
+
+    // Build BIG vibe buttons (with per-tile color class)
+    const chipsHost = el('vibeChips');
+    VIBES.forEach(v=>{
+      const b=document.createElement('button');
+      b.className='vibeBtn tone-'+v.id;
+      b.type='button';
+      b.textContent=v.label;
+      b.dataset.vibe=v.id;
+      b.addEventListener('click',()=>selectVibe(v.id, b));
+      chipsHost.appendChild(b);
+    });
+
+    function selectVibe(id, btn){
+      state.vibe=id;
+      document.querySelectorAll('.vibeBtn').forEach(c=>c.setAttribute('aria-pressed','false'));
+      btn.setAttribute('aria-pressed','true');
+      el('startBtn').disabled=false;
+      el('status').textContent = `Vibe: ${VIBES.find(v=>v.id===id).label}`;
+    }
+
+    // Start
+    el('startBtn').addEventListener('click',()=>{
+      if(!state.vibe) return;
+      landing.classList.add('hidden');
+      feedView.classList.remove('hidden');
+
+      lockPageForFeed(); // exact-fit
+
+      state.startedAt=Date.now();
+      buildFeed();
+      updateTarotBtnVisibility(); // start hidden until scrolled to end
+      el('currentVibeLabel').textContent = VIBES.find(v=>v.id===state.vibe).label;
+      track('start_session',{vibe:state.vibe});
+    });
+
+    // ---------- FEED ----------
+    function buildFeed(){
+      const host = document.getElementById('feed');
+      host.innerHTML='';
+
+      const curated = POSTS[state.vibe] || [];           // your hand-written posts for this vibe
+      const need    = Math.max(0, 10 - curated.length);  // how many placeholders to reach 10
+      const items   = curated.concat(placeholderPosts(need)).slice(0, 10);
+
+      items.forEach((p,i)=>{
+        const card=document.createElement('article');
+        card.className='post';
+        card.innerHTML = makePostHTML(p, i);
+        attachPostInteractions(card, p, i);
+        host.appendChild(card);
+      });
+
+      // Track scroll depth & toggle tarot button
+      host.addEventListener('scroll',()=>{
+        const depth = host.scrollTop/(host.scrollHeight - host.clientHeight);
+        state.scrollDepth = Math.max(state.scrollDepth, depth);
+        updateTarotBtnVisibility();
+      }, { passive:true });
+    }
+
+    // Attach per-post interactions (like/save/share)
+    function attachPostInteractions(card, p, i){
+      // Track views
+      card.addEventListener('mouseenter',()=>track('view_post',{i,title:p.title}));
+
+      // SHARE (simple counter)
+      const shareBtn = card.querySelector('[data-act="share"]');
+      if (shareBtn){
+        shareBtn.addEventListener('click', ()=>{
+          state.postsInteracted++; track('act_share',{i, title:p.title});
+        });
+      }
+
+      // LIKE (heart toggle)
+      const likeBtn = card.querySelector('.like-btn');
+      if (likeBtn){
+        likeBtn.addEventListener('click', () => {
+          const pressed = likeBtn.getAttribute('aria-pressed') === 'true';
+          const nowPressed = !pressed;
+          likeBtn.setAttribute('aria-pressed', String(nowPressed));
+          likeBtn.querySelector('.heart').textContent = nowPressed ? '♥' : '♡';
+
+          if(nowPressed){
+            state.liked.add(p.title);
+            state.postsInteracted++;
+            track('act_like',{i, title:p.title});
+          }else{
+            state.liked.delete(p.title);
+            track('act_unlike',{i, title:p.title});
+          }
+        });
+      }
+
+      // SAVE (toggle)
+      const saveBtn = card.querySelector('[data-act="save"]');
+      if (saveBtn) {
+        saveBtn.setAttribute('aria-pressed','false');
+        saveBtn.addEventListener('click', ()=>{
+          const pressed = saveBtn.getAttribute('aria-pressed') === 'true';
+          const nowPressed = !pressed;
+          saveBtn.setAttribute('aria-pressed', String(nowPressed));
+          saveBtn.textContent = nowPressed ? 'Saved' : 'Save';
+
+          if(nowPressed){
+            state.saved.add(p.title);
+            state.postsInteracted++;
+            track('act_save',{i, title:p.title});
+          }else{
+            state.saved.delete(p.title);
+            track('act_unsave',{i, title:p.title});
+          }
+        });
+      }
+
+      // VIDEO: mute/unmute toggle
+      const videoEl  = card.querySelector('video');
+      const muteBtn  = card.querySelector('.mute-toggle');
+      if (videoEl && muteBtn){
+        videoEl.muted = true;
+        muteBtn.setAttribute('aria-pressed','false');
+
+        muteBtn.addEventListener('click', ()=>{
+          videoEl.muted = !videoEl.muted;
+          if (videoEl.muted){
+            muteBtn.textContent = '🔇';
+            muteBtn.setAttribute('title','Unmute');
+            muteBtn.setAttribute('aria-pressed','false');
+          } else {
+            muteBtn.textContent = '🔊';
+            muteBtn.setAttribute('title','Mute');
+            muteBtn.setAttribute('aria-pressed','true');
+            videoEl.play().catch(()=>{});
+          }
+          track(videoEl.muted ? 'video_muted' : 'video_unmuted', { i, title:p.title });
+        });
+      }
+
+      // OPEN media in lightbox on click (not nested in mute handler)
+      const mediaWrap = card.querySelector('.media');
+      if (mediaWrap){
+        const v  = mediaWrap.querySelector('video');
+        const im = mediaWrap.querySelector('img');
+
+        const mbtn = mediaWrap.querySelector('.mute-toggle');
+        if (mbtn) mbtn.addEventListener('click', (e)=> e.stopPropagation());
+
+        if (v){
+          v.addEventListener('click', (e)=>{
+            e.preventDefault(); e.stopPropagation();
+            openLightboxVideo(v.currentSrc || v.src);
+          });
+        } else if (im){
+          im.addEventListener('click', (e)=>{
+            e.preventDefault(); e.stopPropagation();
+            openLightboxImage(im.currentSrc || im.src, im.alt || '');
+          });
+        }
+      }
+    }
+
+    /* HTML generator for posts (avatar + meta + media + actions) */
+    function makePostHTML(p, i){
+      const name = p.name || ['Nova','Echo','Rune','Quill','Iris','Ky'][i%6];
+      const time = p.time || `${15 + (i%40)}m`;
+      const badge = p.badge || 'Recommended for you';
+
+      const badgeHTML = p.creditUrl
+        ? `<a class="badge badge-link" href="${p.creditUrl}" target="_blank" rel="noopener noreferrer" title="Open original source">
+             ${p.creditLabel || 'Original source'}
+           </a>`
+        : `<span class="badge">${badge}</span>`;
+
+      // Decide media from file extension, not the key name
+      const src = p.video || p.img;
+      let mediaHTML = `<div class="media ghost">media placeholder</div>`;
+      if (src) {
+        const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
+        if (isVideo) {
+          mediaHTML = `
+            <div class="media">
+              <video src="${src}" autoplay muted loop playsinline></video>
+              <button class="mute-toggle" aria-pressed="false" title="Unmute">🔇</button>
+            </div>`;
+        } else {
+          mediaHTML = `
+            <div class="media">
+              <img loading="lazy" src="${src}" alt="${p.alt || ''}">
+            </div>`;
+        }
+      }
+
+      return `
+        <div class="post-header">
+          <div class="avatar" aria-hidden="true"></div>
+          <div class="meta">
+            <div class="name">${name}</div>
+            <div class="muted">
+              ${time} • ${badgeHTML}
+            </div>
+          </div>
+        </div>
+        <h4>${p.title}</h4>
+        ${mediaHTML}
+        <p class="muted">${p.body||''}</p>
+        <div class="actions">
+          <button class="btn secondary like-btn" data-act="like" aria-pressed="false" title="Like">
+            <span class="heart" aria-hidden="true">♡</span>
+            <span class="sr-only">Like</span>
+          </button>
+          <button class="btn secondary" data-act="save">Save</button>
+          <button class="btn secondary" data-act="share">Share</button>
+        </div>
+      `;
+    }
+
+    function placeholderPosts(n=0){
+      const arr=[];
+      for(let i=0;i<n;i++){
+        arr.push({ title:`Post ${i+1}`, body:'lorem vibe ipsum', badge:'Because you lingered' });
+      }
+      return arr;
+    }
+
+    // To Tarot (button appears only when scrolled to end)
+    el('toTarot').addEventListener('click',()=>{
+      hideTarotBtn(); // avoid flash later
+      revealTarot();
+      feedView.classList.add('hidden');
+      tarotView.classList.remove('hidden');
+
+      unlockPageFromFeed(); // leave exact-fit mode
+    });
+
+    // Reveal Tarot: choose image + centered title + paragraph explanation
+    function revealTarot(){
+      const img = document.getElementById('tarotImg');
+      img.src = CARD_IMAGE[state.vibe] || './assets/cards/death.jpg';
+
+      const titleEl = document.getElementById('tarotTitleBelow');
+      titleEl.textContent = CARD_TITLE[state.vibe] || CARD_TITLE.melancholy_loop;
+
+      const expl = document.getElementById('tarotExpl');
+      expl.innerHTML = EXPLANATION_HTML[state.vibe] || EXPLANATION_HTML.melancholy_loop;
+
+      // receipts summary
+      const secs = ((Date.now()-state.startedAt)/1000)|0;
+      const likedArr = Array.from(state.liked);
+      const savedArr = Array.from(state.saved);
+
+      document.getElementById('receiptSummary').textContent =
+        `Based on ~${Math.round((POSTS[state.vibe]||[]).length+10)} posts shown, ` +
+        `${state.postsInteracted} interactions, scroll depth ${(state.scrollDepth*100|0)}%, over ${secs}s. ` +
+        `Liked ${likedArr.length}, saved ${savedArr.length}.`;
+
+      const likedItems = likedArr.map(t=>`<li>❤️ ${t}</li>`).join('');
+      const savedItems = savedArr.map(t=>`<li>🔖 ${t}</li>`).join('');
+      document.getElementById('receiptList').innerHTML =
+        (likedArr.length || savedArr.length)
+          ? likedItems + savedItems
+          : `<li>No likes or saves this session.</li>`;
+    }
+
+    // Receipts toggle
+    el('seeReceipts').addEventListener('click',()=>{
+      hideTarotBtn();
+      receipts.classList.remove('hidden');
+      tarotView.classList.add('hidden');
+      unlockPageFromFeed(); // keep receipts on normal page scroll
+    });
+    el('closeReceipts').addEventListener('click',()=>{
+      receipts.classList.add('hidden');
+      tarotView.classList.remove('hidden');
+    });
+
+    // Reset (Start over)
+    el('resetBtn').addEventListener('click',()=>{
+      hideTarotBtn();
+      Object.assign(state,{
+        vibe:null, events:[], postsInteracted:0, scrollDepth:0, startedAt:null,
+        liked:new Set(), saved:new Set()
+      });
+      document.querySelectorAll('.vibeBtn').forEach(c=>c.setAttribute('aria-pressed','false'));
+      el('startBtn').disabled=true;
+      el('status').textContent='No vibe selected';
+      tarotView.classList.add('hidden');
+      receipts.classList.add('hidden');
+      landing.classList.remove('hidden');
+
+      unlockPageFromFeed(); // exit exact-fit mode back to landing
+    });
+
+    // Tiny analytics recorder
+    function track(type, detail){
+      state.events.push({type, detail, t:Date.now()});
+      console.log('[AO]', type, detail||'');
+    }
+  </script>
+</body>
+</html>

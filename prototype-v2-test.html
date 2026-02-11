@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Algorithmic Oracle — V2</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      /* Exact palette */
+      --yellow:#E6BB3D; --orange:#D98833; --red:#EA1F17;
+      --olive:#8C972C;  --blue:#4997FC;  --mauve:#AD7C79;
+
+      /* Theme tokens */
+      --bg:#FFFFFF; --panel:#FFFFFF;
+      --ink:#1c1f24; --muted:#5b6470;
+      --accent:var(--blue);
+      --ring: 0 0 0 3px rgba(73,151,252,.35);
+      --mystic:#8A5CFF;
+      --header-h: 0px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%; overflow-x:hidden; background:transparent !important;}
+    body{
+      margin:0;
+      font-family:"Montserrat", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background:transparent;
+      color:var(--ink);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    html{
+      overflow-y: scroll;
+      scrollbar-gutter: stable both-edges;
+    }
+    button, input, select, textarea { font-family: inherit; }
+    a{color:var(--accent)}
+    .card{background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:16px; box-shadow:0 8px 24px rgba(0,0,0,.06);}
+    .panel{padding:24px}
+    .muted{color:var(--muted)}
+    .center{text-align:center}
+    .hidden{display:none}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
+    /* ===== Title ===== */
+    header{
+      width: 100%;
+      margin-left: 0;
+      display:flex;
+      justify-content:center;
+      padding:28px 0 16px;
+      position:relative;
+      z-index:1;
+    }
+    h1.title{
+      margin:0;
+      display:inline-block;
+      text-align:center;
+      white-space:nowrap;
+      max-width:min(92vw, 1200px);
+      font-family:"Cinzel Decorative","Bodoni Moda",serif;
+      font-weight:900; letter-spacing:.02em;
+      font-size:clamp(40px, 7vw, 60px);
+      line-height:1.02;
+      color:#FFFFFF;
+      text-shadow:
+        0 0 8px  color-mix(in srgb, var(--mystic) 60%, transparent),
+        0 0 22px color-mix(in srgb, var(--mystic) 45%, transparent),
+        0 0 40px color-mix(in srgb, var(--mystic) 35%, transparent);
+    }
+
+    /* ===== Background ===== */
+    .bg-stars{
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events:none;
+      background: #000 url("../assets/bg/stars.gif") repeat center;
+      background-size: 320px 320px;
+      opacity: 0.88;
+    }
+    .bg-stars::after{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(ellipse at 50% 20%, rgba(0,0,0,.10), rgba(0,0,0,.65));
+    }
+
+    /* ===== Wrap ===== */
+    .wrap{
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px;
+
+      position: relative;
+      z-index: 1;
+
+      min-height: calc(100vh - 150px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    /* ===== Landing ===== */
+    #landing{
+      width: min(860px, 92vw);
+      margin: 0 auto;
+      padding-top: 9vh;
+      background:transparent !important;
+      border:none !important;
+      box-shadow:none !important;
+      padding-left:0;
+      padding-right:0;
+    }
+    #landing h2{
+      margin: 8px 0 10px 0;
+      font-weight: 800;
+      letter-spacing: .08em;
+      font-size: clamp(22px, 2.4vw, 34px);
+      color:#ffffff !important;
+      text-shadow: 0 2px 8px rgba(0,0,0,.55), 0 0 18px rgba(138,92,255,.28);
+    }
+
+    .signal-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 22px;
+    }
+    @media (max-width:860px){
+      .signal-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width:560px){
+      .signal-grid{ grid-template-columns: 1fr; }
+    }
+
+    .signalCard{
+      --tile: var(--blue);
+      --wash: .22;
+
+      appearance:none;
+      border:none;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      min-height: 112px;
+      padding: 18px 18px;
+      border-radius: 20px;
+      cursor:pointer;
+      user-select:none;
+
+      color:#fff;
+      font-weight:800;
+      letter-spacing:.05em;
+      font-size:18px;
+      line-height:1.15;
+      text-align:center;
+      text-shadow: 0 2px 10px rgba(0,0,0,.45);
+
+      background: rgba(255,255,255,.045);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: 0 14px 34px rgba(0,0,0,.24);
+
+      transition:
+        transform .08s ease,
+        box-shadow .18s ease,
+        border-color .18s ease,
+        background .18s ease,
+        filter .18s ease;
+    }
+    .signalCard::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:20px;
+      background: linear-gradient(135deg, rgba(255,255,255,.14), transparent 55%);
+      pointer-events:none;
+      opacity:.75;
+    }
+    .signalCard:hover,
+    .signalCard:focus-visible{
+      transform: translateY(-1px);
+      outline:none;
+      border-color: rgba(255,255,255,.22);
+      box-shadow:
+        0 0 0 6px rgba(255,255,255,.05),
+        0 16px 38px rgba(0,0,0,.28);
+      filter: brightness(1.03) saturate(1.05);
+
+      background:
+        radial-gradient(120% 140% at 20% 0%, rgba(255,255,255,.12), transparent 55%),
+        linear-gradient(180deg,
+          color-mix(in srgb, var(--tile) calc(var(--wash)*100%), transparent),
+          color-mix(in srgb, var(--tile) calc((var(--wash)*100%) - 6%), rgba(0,0,0,.34))
+        );
+    }
+    .signalCard[aria-pressed="true"]{
+      border-color: rgba(255,255,255,.55);
+      box-shadow:
+        inset 0 0 0 2px rgba(255,255,255,.22),
+        0 18px 44px rgba(0,0,0,.34);
+      transform: translateY(-1px);
+      filter: brightness(1.02) saturate(1.10);
+
+      background:
+        radial-gradient(120% 140% at 20% 0%, rgba(255,255,255,.12), transparent 55%),
+        linear-gradient(180deg,
+          color-mix(in srgb, var(--tile) 100%, transparent),
+          color-mix(in srgb, var(--tile) 92%, rgba(0,0,0,.26))
+        );
+    }
+
+    .signalCard.tone-yellow { --tile: var(--yellow); }
+    .signalCard.tone-orange { --tile: var(--orange); }
+    .signalCard.tone-red    { --tile: var(--red); }
+    .signalCard.tone-olive  { --tile: var(--olive); }
+    .signalCard.tone-blue   { --tile: var(--blue); }
+    .signalCard.tone-mauve  { --tile: var(--mauve); }
+
+    @keyframes cardPop{
+      0%   { transform: translateY(0) scale(1); }
+      45%  { transform: translateY(-1px) scale(1.03); }
+      100% { transform: translateY(0) scale(1); }
+    }
+    .signalCard.pop{ animation: cardPop 180ms ease-out; }
+
+    .landing-controls{
+      margin-top: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 16px;
+    }
+    #counter{
+      color:#D5D9FF !important;
+      font-weight:800;
+      letter-spacing:.10em;
+      font-size: 13px;
+      text-transform: lowercase;
+      text-shadow:0 1px 4px rgba(0,0,0,.45);
+      min-width: 140px;
+      text-align:left;
+    }
+    #counter.ready::after{ content:"  ✦"; opacity:.9; }
+
+    .btn{
+      appearance:none; border:none; cursor:pointer;
+      border-radius:14px;
+      font-weight:730;
+      letter-spacing:.12em;
+      text-transform:capitalize
+    }
+    #startBtn{
+      height: 48px;
+      padding: 0 28px;
+      font-size: 16px;
+      line-height: 1;
+      background: var(--yellow);
+      color:#000;
+      box-shadow:0 10px 22px rgba(0,0,0,.22);
+      transition: transform .12s ease, box-shadow .18s ease, filter .18s ease, opacity .18s ease;
+    }
+    #startBtn:disabled{
+      opacity:.35 !important;
+      cursor:not-allowed;
+      box-shadow:none !important;
+      filter: grayscale(.25);
+    }
+    #startBtn:not(:disabled){
+      box-shadow:
+        0 0 0 4px rgba(230,187,61,.18),
+        0 0 26px rgba(230,187,61,.45),
+        0 14px 34px rgba(0,0,0,.32);
+    }
+    #startBtn:not(:disabled):hover,
+    #startBtn:not(:disabled):focus-visible{
+      transform: translateY(-1px);
+      outline:none;
+      box-shadow:
+        0 0 0 5px rgba(230,187,61,.22),
+        0 0 32px rgba(230,187,61,.52),
+        0 18px 40px rgba(0,0,0,.36);
+    }
+    @keyframes startReadyPulse{
+      0%   { filter: brightness(1) saturate(1); transform: translateY(0); }
+      50%  { filter: brightness(1.06) saturate(1.10); transform: translateY(-1px); }
+      100% { filter: brightness(1) saturate(1); transform: translateY(0); }
+    }
+    #startBtn.ready{ animation: startReadyPulse 520ms ease-out 1; }
+
+    /* Interstitial */
+    .interstitial{
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+    }
+    .interstitial .bubble{
+      pointer-events:none;
+      padding: 14px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(0,0,0,.35);
+      color:#fff;
+      font-weight: 800;
+      letter-spacing: .10em;
+      text-transform: lowercase;
+      box-shadow: 0 18px 44px rgba(0,0,0,.45);
+      backdrop-filter: blur(6px);
+    }
+    .interstitial.show{ display:flex; }
+
+    /* ===== FEED ONLY POLISH ===== */
+    #feedView.card{ background:transparent; border:none; box-shadow:none; padding:0; }
+    #feedView{ width: min(860px, 92vw); }
+    #feedView .bar{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px}
+    #feedView .bar > .muted{ color:#D5D9FF; }
+    .feed{display:grid; gap:12px; padding:8px; overflow:auto}
+    #feedView .feed{
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,.35) transparent;
+    }
+    #feedView .feed::-webkit-scrollbar{ height:10px; width:10px; }
+    #feedView .feed::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.35); border-radius:999px; }
+
+    .post{
+      display:grid; gap:8px;
+      padding:14px;
+      border-radius:14px;
+    }
+    #feedView .post{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      color:#fff;
+    }
+    .post-header{ display:flex; align-items:center; gap:10px; }
+    .post-header .avatar{
+      width:34px; height:34px; border-radius:999px;
+      background: radial-gradient(circle at 30% 30%, #fff, #bbb);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.35);
+      flex:0 0 auto;
+    }
+    .post-header .meta{ font-size:13px; color:#D5D9FF; line-height:1.2; }
+    .post-header .meta .name{ color:#fff; font-weight:700; letter-spacing:.02em; }
+    #feedView .post h4{ margin:2px 0 0; font-size:20px; line-height:1.25; color:#fff; }
+
+    .badge{
+      font-size:11px; padding:3px 8px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.10);
+      color:#E8EBFF;
+    }
+    .badge-link{
+      text-decoration:none;
+      display:inline-block;
+      transition:background .15s ease, transform .08s ease, box-shadow .15s ease;
+    }
+    .badge-link:hover{ background:rgba(255,255,255,.18); }
+    .badge-link:active{ transform:translateY(1px); }
+    .badge-link:focus-visible{
+      outline:none;
+      box-shadow:0 0 0 3px rgba(73,151,252,.35);
+    }
+
+    .media{
+      background:
+        radial-gradient(120% 180% at 80% 0%, rgba(138,92,255,.35), transparent 60%),
+        radial-gradient(140% 160% at 0% 100%, rgba(73,151,252,.30), transparent 50%),
+        rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.2);
+      color:#E8EBFF;
+      border-radius:10px;
+      display:grid;
+      place-items:center;
+      min-height: 240px;
+      position:relative;
+      overflow:hidden;
+    }
+    #feedView .post .media img,
+    #feedView .post .media video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      border-radius:8px;
+    }
+    .mute-toggle{
+      position:absolute;
+      right:8px; bottom:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.45);
+      background:rgba(0,0,0,.35);
+      color:#fff; font-weight:800; cursor:pointer;
+      backdrop-filter: blur(4px);
+    }
+    .mute-toggle:hover{ background:rgba(0,0,0,.5); }
+
+    .actions{display:flex; gap:8px}
+    #feedView .post .actions .btn.secondary{
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.25);
+      box-shadow:none;
+      height: 40px;
+      padding: 0 12px;
+      font-size: 13px;
+      letter-spacing: .08em;
+      text-transform: none;
+      border-radius: 12px;
+      font-weight: 800;
+    }
+    #feedView .post .actions .btn.secondary:hover,
+    #feedView .post .actions .btn.secondary:focus-visible{
+      background:rgba(255,255,255,.22);
+      transform:translateY(-1px);
+      outline:none;
+    }
+    #feedView .post .actions [data-act="save"][aria-pressed="true"]{
+      background: rgba(255,255,255,.28) !important;
+      border-color: rgba(255,255,255,.55) !important;
+      font-weight: 900 !important;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.20);
+      transform: translateY(-1px);
+    }
+    #feedView .post .actions [data-act="save"][aria-pressed="true"]::before{ content: "🔖 "; }
+
+    /* Exact-fit layout ONLY when feed is active */
+    body.lock-scroll{ overflow:hidden; height:100vh; }
+    body.lock-scroll > .wrap{
+      height: calc(100vh - var(--header-h));
+      overflow:hidden;
+      align-items: stretch;
+    }
+    body.lock-scroll #feedView{
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      position:relative;
+    }
+    body.lock-scroll #feedView .feed{
+      flex:1 1 auto;
+      min-height:0;
+      overflow:auto;
+      overscroll-behavior:contain;
+    }
+
+    /* Float Tarot button */
+    #toTarot{
+      position:absolute;
+      right:16px;
+      bottom:16px;
+      display:none;
+      transform: translateY(8px);
+      opacity:0;
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events:none;
+      background: var(--red);
+      color:#fff;
+      height: 44px;
+      padding: 0 18px;
+      border-radius: 14px;
+      box-shadow:0 12px 28px rgba(0,0,0,.30);
+      font-size: 13px;
+    }
+    #toTarot.is-visible{
+      display:inline-block;
+      opacity:1;
+      transform: translateY(0);
+      pointer-events:auto;
+    }
+
+    footer{opacity:.8; font-size:12px; margin-top:12px; color:#D5D9FF}
+
+    /* Receipts */
+    #receipts pre{
+      width: min(820px, 92vw);
+      white-space: pre-wrap;
+      background:#0b1020;
+      color:#e9edff;
+      border-radius:14px;
+      padding:14px 16px;
+      border:1px solid rgba(0,0,0,.10);
+    }
+
+    /* Lightbox */
+    .lightbox{
+      position:fixed; inset:0; z-index:9999;
+      background:rgba(0,0,0,.78);
+      display:flex; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .lightbox.hidden{ display:none; }
+    .lb-frame{
+      position:relative;
+      width:96vw;
+      height:96dvh;
+      max-width:96vw;
+      max-height:96dvh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:14px;
+      box-shadow:0 20px 60px rgba(0,0,0,.6);
+      background:transparent;
+      overflow:hidden;
+    }
+    .lb-media{
+      max-width:100%;
+      max-height:100%;
+      width:auto;
+      height:auto;
+      object-fit:contain;
+      display:block;
+      background:#000;
+      border-radius:12px;
+    }
+    .lb-close{
+      position:absolute; top:16px; right:16px;
+      appearance:none; border:1px solid rgba(255,255,255,.35);
+      background:rgba(0,0,0,.45);
+      color:#fff; font-size:18px; line-height:1; border-radius:999px;
+      padding:8px 10px; cursor:pointer;
+      backdrop-filter: blur(4px);
+    }
+    .lb-close:hover{ background:rgba(0,0,0,.6); }
+
+    /* ===== FEED MICRO-FEEDBACK TOAST ===== */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      z-index: 9997;
+
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      padding: 10px 14px;
+      border-radius: 999px;
+
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(0,0,0,.38);
+      color:#fff;
+
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: lowercase;
+      font-size: 12px;
+
+      box-shadow: 0 18px 44px rgba(0,0,0,.45);
+      backdrop-filter: blur(6px);
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease;
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+    .toast.hidden{ display:none; }
+
+    .toast-dot{
+      width: 8px; height: 8px; border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 0 12px rgba(138,92,255,.55);
+      animation: toastPulse 1.1s ease-in-out infinite;
+    }
+    @keyframes toastPulse{
+      0%{ transform: scale(1); opacity:.65; }
+      50%{ transform: scale(1.15); opacity:1; }
+      100%{ transform: scale(1); opacity:.65; }
+    }
+    .toast.kind-like  .toast-dot{ background: rgba(73,151,252,.95); box-shadow:0 0 14px rgba(73,151,252,.55); }
+    .toast.kind-save  .toast-dot{ background: rgba(230,187,61,.95); box-shadow:0 0 14px rgba(230,187,61,.55); }
+    .toast.kind-batch .toast-dot{ background: rgba(138,92,255,.95); box-shadow:0 0 14px rgba(138,92,255,.55); }
+    .toast.kind-dwell .toast-dot{ background: rgba(173,124,121,.95); box-shadow:0 0 14px rgba(173,124,121,.55); }
+
+    #feed.is-refreshing{
+      opacity: .55;
+      filter: blur(.6px) saturate(.92);
+      transition: opacity 180ms ease, filter 180ms ease;
+    }
+    #feed.is-refreshing::after{
+      content:"";
+      position: sticky;
+      bottom: 0;
+      display:block;
+      height: 22px;
+      background: linear-gradient(to bottom, transparent, rgba(0,0,0,.22));
+      pointer-events:none;
+    }
+
+    /* === TAROT CARD ANIMATIONS (kept) === */
+    @keyframes mysticDrift {
+      0%   { transform: translateY(0) rotate(-0.6deg) scale(1); }
+      40%  { transform: translateY(-16px) rotate(0.6deg) scale(1.008); }
+      70%  { transform: translateY(-8px) rotate(-0.35deg) scale(1.004); }
+      100% { transform: translateY(0) rotate(-0.6deg) scale(1); }
+    }
+    #tarotView:not(.hidden) .tarot-card{
+  animation: mysticDrift 4.4s ease-in-out infinite; /* was ~6.2s */
+}
+    @keyframes auraBreathe {
+      0%   { opacity: .30; filter: blur(18px); transform: scale(1); }
+      50%  { opacity: .55; filter: blur(22px); transform: scale(1.03); }
+      100% { opacity: .30; filter: blur(18px); transform: scale(1); }
+    }
+    @keyframes mysticGlint {
+      0%   { transform: translateX(-140%) skewX(-14deg); opacity: 0; }
+      10%  { opacity: .35; }
+      22%  { opacity: .12; }
+      35%  { opacity: 0; }
+      100% { transform: translateX(160%) skewX(-14deg); opacity: 0; }
+    }
+    @keyframes mysticReveal {
+      0%   { opacity: 0; transform: translateY(10px) scale(.992); filter: blur(1.2px); }
+      60%  { opacity: 1; transform: translateY(-2px) scale(1.002); filter: blur(0px); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* flippable */
+    .tarot-card{
+      perspective: 1400px;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .tarot-inner{
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 680ms cubic-bezier(.2,.75,.15,1);
+    }
+    .tarot-card.is-flipped .tarot-inner{
+      transform: rotateY(180deg);
+    }
+    .tarot-face{
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 22px;
+      overflow: hidden;
+    }
+    .tarot-front{ transform: rotateY(0deg); }
+    .tarot-back{
+      transform: rotateY(180deg);
+      background:
+        radial-gradient(120% 140% at 50% 0%, rgba(138,92,255,.25), transparent 60%),
+        radial-gradient(140% 120% at 0% 100%, rgba(73,151,252,.18), transparent 55%),
+        #0b1020;
+      border: 1px solid rgba(255,255,255,.14);
+    }
+    .tarot-back-inner{
+      height:100%;
+      padding: 22px 22px;
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+      color:#E8EBFF;
+    }
+    .tarot-back-title{
+      margin:0;
+      font-family:"Cinzel Decorative","Bodoni Moda",serif;
+      font-weight:900;
+      letter-spacing:.02em;
+      font-size: 28px;
+      line-height:1.08;
+      color:#fff;
+      text-shadow:
+        0 0 10px rgba(138,92,255,.35),
+        0 0 26px rgba(138,92,255,.20);
+    }
+    .tarot-back-body{
+      overflow:auto;
+      padding-right: 6px;
+      line-height: 1.55;
+      font-size: 15.5px;
+      color: rgba(232,235,255,.92);
+    }
+    .tarot-back-body p{ margin:0 0 10px 0; }
+    .tarot-back-body p:last-child{ margin-bottom:0; }
+
+    .tarot-card:focus-visible{
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(138,92,255,.28), 0 0 0 8px rgba(255,255,255,.06);
+    }
+
+    /* aura + glint */
+    .tarot-card::before{
+      content:"";
+      position:absolute;
+      inset:-16px;
+      border-radius: 30px;
+      background:
+        radial-gradient(60% 60% at 50% 35%, rgba(138,92,255,.55), transparent 70%),
+        radial-gradient(55% 55% at 20% 80%, rgba(73,151,252,.28), transparent 70%),
+        radial-gradient(55% 55% at 85% 75%, rgba(230,187,61,.16), transparent 72%);
+      z-index:-1;
+      opacity:.22;
+      filter: blur(18px);
+      animation: auraBreathe 4.6s ease-in-out infinite;
+      pointer-events:none;
+    }
+    .tarot-card::after{
+      content:"";
+      position:absolute;
+      inset:-12%;
+      border-radius: 26px;
+      pointer-events:none;
+      background: linear-gradient(
+        110deg,
+        transparent 25%,
+        rgba(255,255,255,.50) 38%,
+        transparent 58%
+      );
+      mix-blend-mode: screen;
+      opacity: 0;
+      transform: translateX(-140%) skewX(-14deg);
+      animation: mysticGlint 8.5s ease-in-out infinite;
+    }
+    #tarotView:not(.hidden) .tarot-card{
+      animation: mysticDrift 6.2s ease-in-out infinite;
+    }
+    #tarotView.is-revealing .tarot-card{
+      animation:
+        mysticReveal 560ms cubic-bezier(.2,.9,.2,1) both,
+        mysticDrift 6.2s ease-in-out 560ms infinite;
+    }
+    @media (prefers-reduced-motion: reduce){
+      #tarotView:not(.hidden) .tarot-card,
+      .tarot-card::before,
+      .tarot-card::after,
+      #tarotView.is-revealing .tarot-card{
+        animation: none !important;
+      }
+    }
+
+    /* =========================================================
+       TAROT (CLEAN / SINGLE SOURCE OF TRUTH)
+       ========================================================= */
+
+    :root{
+  --tarot-max: 650px;
+  --tarot-w: min(var(--tarot-max), 92vw);
+
+  /* NEW: sizes */
+  --tarot-title-size: clamp(18px, 1.8vw, 26px);
+  --tarot-sub-size:   clamp(14px, 1.25vw, 18px);
+
+  --tarot-btn-size:   clamp(14px, 1.25vw, 18px);
+  --tarot-btn-h:      clamp(44px, 4vw, 56px);
+  --tarot-btn-pad-x:  clamp(16px, 2vw, 26px);
+}
+    /* when tarot is active, let wrap go full width */
+    .wrap.tarot-mode{
+      max-width: none !important;
+      width: 100% !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+
+    /* kill the “sheet” styling on tarotView */
+    #tarotView.card.panel{
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      overflow: visible !important;
+    }
+    #tarotView.card.panel::before{ display:none !important; }
+
+    /* center everything */
+    #tarotView{
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+      align-self: stretch !important;
+    }
+    #tarotView .tarot{
+      width: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 14px !important;
+      padding: 0 !important;
+    }
+    #tarotView .tarot-shell,
+    #tarotView .tarot-col{
+      width: 100% !important;
+      max-width: none !important;
+      display: grid !important;
+      justify-items: center !important;
+    }
+
+    /* top labels */
+    #tarotView .tarotTop{
+      width: var(--tarot-w) !important;
+      text-align: center !important;
+      margin: 0 auto clamp(16px, 2.2vw, 34px);
+    }
+    #tarotView .tarotTop-title{
+      font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, sans-serif !important;
+      font-weight: 900 !important;
+      font-size: var(--tarot-title-size);
+      letter-spacing: .22em !important;
+      text-transform: uppercase !important;
+      color: #ffffff !important;
+      text-shadow:
+        0 2px 10px rgba(0,0,0,.60),
+        0 0 16px rgba(138,92,255,.55),
+        0 0 34px rgba(138,92,255,.35) !important;
+    }
+    #tarotView .tarotTop-sub{
+      font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, sans-serif !important;
+      font-weight: 800 !important;
+      font-size: var(--tarot-sub-size);
+      letter-spacing: .10em !important;
+      text-transform: lowercase !important;
+      color: rgba(233,237,255,.92) !important;
+      text-shadow: 0 2px 10px rgba(0,0,0,.55) !important;
+    }
+
+    /* IMPORTANT: remove mat constraints completely */
+    #tarotView .tarot-mat{
+      width: var(--tarot-w) !important;
+      max-width: none !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      display: flex !important;
+      justify-content: center !important;
+    }
+
+    /* BIG card */
+    #tarotView .tarot-card{
+      width: var(--tarot-w) !important;
+      max-width: none !important;
+      aspect-ratio: 493 / 700;
+      height: auto !important;
+      border-radius: 22px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: 0 22px 70px rgba(0,0,0,.35);
+      display: block !important;
+      margin: 0 auto !important;
+    }
+
+    /* make front image always fill correctly */
+    #tarotView .tarot-front img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+
+    /* buttons: readable on stars */
+    #tarotView .tarot-actions{
+      width: var(--tarot-w) !important;
+      display:flex;
+      justify-content:center;
+      gap: 10px;
+      margin-top: 14px !important;
+    }
+    #tarotView .tarot-actions .btn{
+  font-size: var(--tarot-btn-size) !important;
+  height: var(--tarot-btn-h) !important;
+  padding: 0 var(--tarot-btn-pad-x) !important;
+  border-radius: 999px !important; /* keep the pill look */
+  letter-spacing: .12em !important;
+  font-weight: 900 !important;
+}
+    #tarotView .tarot-actions .btn.secondary{
+      background: rgba(255,255,255,.14) !important;
+      border: 1px solid rgba(255,255,255,.28) !important;
+      color: #fff !important;
+      text-shadow: 0 2px 10px rgba(0,0,0,.45) !important;
+      backdrop-filter: blur(6px);
+    }
+    #tarotView .tarot-actions .btn.secondary:hover,
+    #tarotView .tarot-actions .btn.secondary:focus-visible{
+      background: rgba(255,255,255,.22) !important;
+      border-color: rgba(255,255,255,.40) !important;
+    }
+    #tarotView .tarot-actions #resetBtn{
+      background: var(--yellow) !important;
+      color:#000 !important;
+    }
+
+    /* hide everything except: top labels + card + buttons */
+    #tarotTitleBelow,
+    #tarotExpl,
+    #tarotView footer.muted{
+      display:none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-stars" aria-hidden="true"></div>
+
+  <header>
+    <h1 class="title">The Algorithmic Oracle</h1>
+  </header>
+
+  <!-- interstitial -->
+  <div id="interstitial" class="interstitial" aria-hidden="true">
+    <div class="bubble">building your feed…</div>
+  </div>
+
+  <!-- feed micro-feedback toast -->
+  <div id="feedToast" class="toast hidden" aria-live="polite" aria-atomic="true">
+    <span class="toast-dot" aria-hidden="true"></span>
+    <span id="toastText">tuning your feed…</span>
+  </div>
+
+  <div class="wrap">
+    <!-- LANDING -->
+    <section id="landing" class="card panel">
+      <h2 class="center">Pick 3 to Personalize Your Experience</h2>
+
+      <div class="signal-grid" id="signalCards" role="group" aria-label="Pick 3 signals"></div>
+
+      <div class="landing-controls">
+        <span class="muted" id="counter">0/3 selected</span>
+        <button class="btn" id="startBtn" disabled>Start</button>
+      </div>
+    </section>
+
+    <!-- FEED -->
+    <section id="feedView" class="card panel hidden">
+      <div class="bar">
+        <div class="muted">Now tuning to: <strong id="currentVibeLabel">For You</strong></div>
+        <button class="btn secondary" id="toTarot">Get your tarot</button>
+      </div>
+      <div class="feed" id="feed"></div>
+      <footer class="muted">We don’t store anything. This session lives in your browser.</footer>
+    </section>
+
+    <!-- TAROT -->
+    <section id="tarotView" class="card panel hidden">
+      <div class="tarot">
+        <div class="tarot-shell">
+          <div class="tarot-col">
+
+            <div class="tarotTop">
+              <div class="tarotTop-title">Your Card</div>
+              <div class="tarotTop-sub">tap to see your reading</div>
+            </div>
+
+            <div class="tarot-mat">
+              <div class="tarot-card" id="tarotCard" role="button" tabindex="0" aria-label="Flip tarot card" aria-pressed="false">
+                <div class="tarot-inner">
+                  <!-- FRONT -->
+                  <div class="tarot-face tarot-front">
+                    <img id="tarotImg" src="./assets/cards/death.jpg" alt="Tarot card">
+                  </div>
+
+                  <!-- BACK -->
+                  <div class="tarot-face tarot-back">
+                    <div class="tarot-back-inner">
+                      <h3 class="tarot-back-title" id="tarotTitleOnCard"></h3>
+                      <div class="tarot-back-body" id="tarotExplOnCard"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="tarot-title" id="tarotTitleBelow"></h3>
+
+            <div class="tarot-actions">
+              <button class="btn secondary" id="seeReceipts">See receipts</button>
+              <button class="btn" id="resetBtn">Start over</button>
+            </div>
+
+            <div class="tarot-expl" id="tarotExpl"></div>
+
+            <footer class="muted" style="color:#5b6470; margin-top:4px;">
+              The Oracle is a mirror, not a diagnosis. Take breaks. Touch grass.
+            </footer>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECEIPTS -->
+    <section id="receipts" class="card panel hidden">
+      <h3>Session receipts</h3>
+      <p class="muted" id="receiptSummary"></p>
+      <pre id="receiptProfile"></pre>
+      <ol id="receiptList"></ol>
+      <div style="display:flex; justify-content:flex-end; margin-top:8px">
+        <button class="btn secondary" id="closeReceipts" style="text-transform:none; letter-spacing:.06em;">Close</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <button class="lb-close" aria-label="Close (Esc)">✕</button>
+    <div class="lb-frame">
+      <video id="lbVideo" class="lb-media" controls playsinline></video>
+      <img id="lbImg" class="lb-media" alt="">
+    </div>
+  </div>
+
+  <script>
+    // =========================
+    // STEP 1: PROFILE + STATE
+    // =========================
+    const profile = { fool:0.25, wheel:0.25, death:0.25, tower:0.25 };
+
+    const state = {
+      signals: new Set(),
+      seedProfile: null,
+      finalProfile: null,
+
+      remainingPool: [],
+      shown: [],
+      batch: 0,
+      maxBatches: 2,
+
+      events: [],
+      postsInteracted: 0,
+      scrollDepth: 0,
+      startedAt: null,
+
+      liked: new Set(),
+      saved: new Set(),
+
+      selectionOrder: [],
+      isLoadingBatch: false,
+      batchDelayMs: 1600,
+    };
+
+    const el = id => document.getElementById(id);
+
+    // =========================
+    // STEP 2: SIGNALS + MAPPING
+    // =========================
+    const SIGNALS = [
+      { id:'keep_light',  label:'keep it light',        tone:'yellow' },
+      { id:'discourse',   label:'discourse check',      tone:'orange' },
+      { id:'inspire',     label:'inspiration boost',    tone:'red'    },
+      { id:'glow_up',     label:'glow up mode',         tone:'olive'  },
+      { id:'spice',       label:'spice it up',          tone:'blue'   },
+      { id:'real_talk',   label:'real talk',            tone:'mauve'  },
+      { id:'low_energy',  label:'low-energy scroll',    tone:'yellow' },
+      { id:'decompress',  label:'chill & decompress',   tone:'orange' },
+      { id:'new',         label:'make it feel new',     tone:'red'    },
+      { id:'aesthetic',   label:'aesthetic reset',      tone:'olive'  },
+      { id:'cozy',        label:'cozy scroll',          tone:'blue'   },
+      { id:'focus',       label:'quiet focus',          tone:'mauve'  }
+    ];
+
+    const SIGNAL_GRID_ORDER = [
+      'keep_light',  'discourse', 'inspire',
+      'decompress',  'new',       'aesthetic',
+      'glow_up',     'spice',     'real_talk',
+      'low_energy',  'cozy',      'focus'
+    ];
+
+    const SIGNAL_TO_WEIGHTS = {
+      "keep it light":      { fool: 0.40, wheel: 0.10, death: 0.05, tower: 0.05 },
+      "discourse check":    { fool: 0.05, wheel: 0.20, death: 0.10, tower: 0.35 },
+      "inspiration boost":  { fool: 0.25, wheel: 0.10, death: 0.05, tower: 0.05 },
+      "glow up mode":       { fool: 0.15, wheel: 0.35, death: 0.05, tower: 0.05 },
+      "spice it up":        { fool: 0.10, wheel: 0.30, death: 0.05, tower: 0.15 },
+      "real talk":          { fool: 0.05, wheel: 0.10, death: 0.20, tower: 0.15 },
+      "low-energy scroll":  { fool: 0.05, wheel: 0.05, death: 0.40, tower: 0.05 },
+      "chill & decompress": { fool: 0.15, wheel: 0.05, death: 0.25, tower: 0.05 },
+      "make it feel new":   { fool: 0.10, wheel: 0.40, death: 0.05, tower: 0.05 },
+      "aesthetic reset":    { fool: 0.20, wheel: 0.25, death: 0.05, tower: 0.05 },
+      "cozy scroll":        { fool: 0.20, wheel: 0.05, death: 0.20, tower: 0.05 },
+      "quiet focus":        { fool: 0.05, wheel: 0.05, death: 0.25, tower: 0.05 },
+    };
+
+    // =========================
+    // STEP 3: POSTS
+    // =========================
+    const POSTS = {
+      live_laugh_leap:[
+        { title:'', body:'trust fall with the internet', badge:'', img:'./assets/feed/fool/fool1.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'Because you like optimism posts', img:'./assets/feed/fool/fool2.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DQW0i7nAF8b/', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/fool/fool3.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/fool/fool4.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/fool/fool5.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/fool/fool6.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DPQLYs-EVJL', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/fool/fool7.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/fool/fool8.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/fool/fool9.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/fool/fool10.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DPCBtUdiemS', creditLabel:'Original post' },
+      ],
+      fomo_whiplash:[
+        { title:'', body:'', badge:'', img:'./assets/feed/wheel/wheel1.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', video:'./assets/feed/wheel/wheel2.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DQIE5fOkhQQ/', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', video:'./assets/feed/wheel/wheel3.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', video:'./assets/feed/wheel/wheel4.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DP_x8wHiPME/', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', video:'./assets/feed/wheel/wheel5.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', video:'./assets/feed/wheel/wheel6.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', video:'./assets/feed/wheel/wheel7.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DKR8vDwS3K5/', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', video:'./assets/feed/wheel/wheel8.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', video:'./assets/feed/wheel/wheel9.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DQMerSJAGyl', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', video:'./assets/feed/wheel/wheel10.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+      ],
+      vulnerability_irony:[
+        { title:'confession: i’m fine lol', body:'(i am not fine)', badge:'Because you paused on confessions', img:'./assets/feed/tower/tower1.jpg', alt:'', creditUrl:'https://x.com/onlyyagirl_/status/1981148680377028841', creditLabel:'Original post' },
+        { title:'if it’s breaking, i’m broadcasting', body:'meltdown but make it content', badge:'Because you watch chaos streams', img:'./assets/feed/tower/tower2.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DESn5I6vWIH/', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/tower/tower3.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/tower/tower4.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/tower/tower5.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/tower/tower6.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/tower/tower7.mp4', alt:'', creditUrl:'https://x.com/tannertan36/status/1955073200141799691', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/tower/tower8.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/tower/tower9.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/tower/tower10.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DPt3x6-CBGQ', creditLabel:'Original post' },
+      ],
+      melancholy_loop:[
+        { title:'breaking: future cancelled due to past', body:'more at 11', badge:'', img:'./assets/feed/death/death1.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'Because you rewatch bleak posts', img:'./assets/feed/death/death2.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DO-1rSOj_u7', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/death/death3.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/death/death4.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'doomscrolling as a hobby', body:'level 47 unlocked', badge:'', img:'./assets/feed/death/death5.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/death/death6.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/death/death7.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/death/death8.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/death/death9.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
+        { title:'', body:'', badge:'', img:'./assets/feed/death/death10.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DPxpqAEjthK', creditLabel:'Original post' },
+      ],
+    };
+
+    const CARD_IMAGE = {
+      live_laugh_leap:      './assets/cards/thefool.jpg',
+      fomo_whiplash:        './assets/cards/wheeloffortune.jpg',
+      vulnerability_irony:  './assets/cards/thetower.jpg',
+      melancholy_loop:      './assets/cards/death.jpg'
+    };
+    const CARD_TITLE = {
+      melancholy_loop:      "The Irony-Poisoned Nihilist",
+      live_laugh_leap:      "The Optimistic Drifter",
+      fomo_whiplash:        "The Trend Cycler",
+      vulnerability_irony:  "The Rage-Bait Addict"
+    };
+    const EXPLANATION_HTML = {
+      melancholy_loop: `
+
+<p><strong>The Read:</strong> You’ve perfected the armor of detachment. Everything is a meme, a reaction, a wink—because sincerity feels unsafe. You don’t want to be disappointed, so you pre-kill hope before it can embarrass you. Your feed is a graveyard where nothing is allowed to matter too much.</p>
+
+<p><strong>The Algorithm:</strong> It learned that bleakness keeps you longer than joy. It feeds you doom edits, apathy humor, melancholic nostalgia, “we’re cooked” summaries—because paralysis is still engagement. It keeps you in a low-grade dread: awake enough to scroll, numb enough to never move.</p>
+
+<p><strong>The Cost:</strong> You confuse witnessing with living. You scroll past suffering and call it “content,” and slowly your empathy starts feeling like something embarrassing you used to have.</p>
+
+<p><strong>Counterspell:</strong> Do one small non-performative act: donate, message someone, clean something, step outside. No posting. No irony. Just proof you still have agency.</p>
+
+<p><strong>The Prophecy:</strong> You’ll watch the world end from bed—mistaking observation for survival.</p>
+`,
+      live_laugh_leap: `
+
+<p><strong>The Read:</strong> You curate happiness like it’s a moral duty. Your feed is a soft-focus shrine to “good vibes,” where discomfort is treated as contamination. You don’t lack feelings—you avoid them. You scroll toward anything pretty, simple, and solvable, because ambiguity feels like a threat. You’re not naïve. You’re outsourcing reality.</p>
+
+<p><strong>The Algorithm:</strong> The system clocks your avoidance and protects it. It learns your “positivity filter” and optimizes around it: glow-up arcs, tidy resolutions, aesthetic lives, people who never sweat, never grieve, never get complicated. Anything messy gets quietly buried—because you won’t reward it.</p>
+
+<p><strong>The Cost:</strong> You start confusing consumption with growth. “Romanticizing” becomes anesthesia. The more your feed edits life into a moodboard, the less you can tolerate actual life.</p>
+
+<p><strong>Counterspell:</strong> Follow 3 accounts that talk about the hard parts plainly. Save one uncomfortable post and sit with it for 30 seconds—no scrolling, no “lol,” no reframing.</p>
+
+<p><strong>The Prophecy:</strong> You’ll keep smiling at the camera—right up to the edge.</p>
+`,
+      fomo_whiplash: `
+
+<p><strong>The Read:</strong> Your identity is a revolving door. A new “era” every week. A new aesthetic every scroll. You don’t chase objects—you chase belonging. The feed is your slot machine: refresh, refresh, refresh, hoping the next trend makes you feel real for five minutes.</p>
+
+<p><strong>The Algorithm:</strong> It monetizes your FOMO like a heartbeat. It learned that urgency overrides taste, budget, and doubt—so it floods you with “must-have,” “before it sells out,” “everyone’s doing this,” “you’re late.” You become a predictable pattern: desire → buy → post → crash → repeat.</p>
+
+<p><strong>The Cost:</strong> Time dissolves. Your sense of self gets replaced by a carousel of borrowed personalities—and the landfill quietly becomes your shadow archive.</p>
+
+<p><strong>Counterspell:</strong> Next time you feel urgency, wait 24 hours. Unfollow 5 “trend accelerators.” Replace one purchase with one long-form thing (book, video essay, museum, walk) that can’t be unboxed.</p>
+
+<p><strong>The Prophecy:</strong> The wheel keeps turning. The “cool” expires the moment you catch it.</p>
+`,
+      vulnerability_irony: `
+
+<p><strong>The Read:</strong> You are powered by combustion. Outrage gives you clarity, purpose, and a clean villain. You click because anger feels like being alive. You say it’s principles—but the truth is simpler: conflict is your entertainment system. You feed on takedowns, pile-ons, and the thrill of being “right.”</p>
+
+<p><strong>The Algorithm:</strong> It knows anger is the fastest emotion. It serves you “us vs. them,” betrayal narratives, and moral panic—because you react immediately and loudly. It keeps your nervous system on a leash: outrage, relief, outrage again. You become reliable fuel.</p>
+
+<p><strong>The Cost:</strong> You lose nuance. Then you lose people. Eventually you can’t tell the difference between care and cruelty—only whether it hits.</p>
+
+<p><strong>Counterspell:</strong> Before you share, read one source you disagree with. Mute one outrage account for a week. Replace one “takedown” with one constructive action you can finish in 10 minutes.</p>
+
+<p><strong>The Prophecy:</strong> The lightning doesn’t miss forever. One day the pile-on points at your house.</p>`
+    };
+
+    function buildPool(){
+      const pool = [];
+      function add(categoryId, tags){
+        (POSTS[categoryId] || []).forEach((p, idx)=>{
+          pool.push({ ...p, id: `${categoryId}_${idx}`, tags, source: categoryId });
+        });
+      }
+      add('live_laugh_leap',     { fool:1, wheel:0, death:0, tower:0 });
+      add('fomo_whiplash',       { fool:0, wheel:1, death:0, tower:0 });
+      add('melancholy_loop',     { fool:0, wheel:0, death:1, tower:0 });
+      add('vulnerability_irony', { fool:0, wheel:0, death:0, tower:1 });
+      return pool;
+    }
+    const POOL = buildPool();
+
+    function normalizeProfile(prof){
+      const sum = prof.fool + prof.wheel + prof.death + prof.tower;
+      if(sum <= 0) return;
+      prof.fool /= sum; prof.wheel /= sum; prof.death /= sum; prof.tower /= sum;
+    }
+    function setProfileFromSignals(){
+      profile.fool = 0.25; profile.wheel = 0.25; profile.death = 0.25; profile.tower = 0.25;
+
+      state.signals.forEach(sigId=>{
+        const found = SIGNALS.find(s => s.id === sigId);
+        const label = found ? found.label : sigId;
+        const w = SIGNAL_TO_WEIGHTS[label];
+        if(!w) return;
+
+        profile.fool  += (w.fool  || 0);
+        profile.wheel += (w.wheel || 0);
+        profile.death += (w.death || 0);
+        profile.tower += (w.tower || 0);
+      });
+
+      normalizeProfile(profile);
+      state.seedProfile = { ...profile };
+    }
+
+    function scorePost(post, prof){
+      const t = post.tags || {};
+      return (t.fool||0)*prof.fool + (t.wheel||0)*prof.wheel + (t.death||0)*prof.death + (t.tower||0)*prof.tower;
+    }
+    function pickBatch(pool, prof, n=10){
+      const ranked = [...pool].sort((a,b)=>scorePost(b, prof) - scorePost(a, prof));
+      return ranked.slice(0, n);
+    }
+    function updateProfileFromPost(post, strength){
+      const t = post.tags || {};
+      profile.fool  += (t.fool||0)  * strength;
+      profile.wheel += (t.wheel||0) * strength;
+      profile.death += (t.death||0) * strength;
+      profile.tower += (t.tower||0) * strength;
+      normalizeProfile(profile);
+    }
+
+    function getArchetypeFromProfile(prof){
+      let best = 'fool';
+      let bestVal = prof.fool;
+      for(const k of ['wheel','death','tower']){
+        if(prof[k] > bestVal){ best = k; bestVal = prof[k]; }
+      }
+      return best;
+    }
+    function vibeFromArchetype(a){
+      if(a === 'fool')  return 'live_laugh_leap';
+      if(a === 'wheel') return 'fomo_whiplash';
+      if(a === 'death') return 'melancholy_loop';
+      return 'vulnerability_irony';
+    }
+
+    // =========================
+    // UI: LANDING (pick 3)
+    // =========================
+    const cardsHost = el('signalCards');
+    const counterEl = el('counter');
+    const startBtn  = el('startBtn');
+
+    function popCard(btn){
+      btn.classList.remove('pop');
+      void btn.offsetWidth;
+      btn.classList.add('pop');
+      setTimeout(()=>btn.classList.remove('pop'), 220);
+    }
+
+    function updateLandingUI(){
+      counterEl.textContent = `${state.signals.size}/3 selected`;
+      startBtn.disabled = state.signals.size !== 3;
+
+      const isReady = state.signals.size === 3;
+      if(isReady && !counterEl.classList.contains('ready')){
+        startBtn.classList.add('ready');
+        counterEl.classList.add('ready');
+        setTimeout(()=>startBtn.classList.remove('ready'), 600);
+      }
+      if(!isReady){
+        counterEl.classList.remove('ready');
+        startBtn.classList.remove('ready');
+      }
+    }
+
+    function toggleSignal(id, btn){
+      const isOn = btn.getAttribute('aria-pressed') === 'true';
+      popCard(btn);
+
+      if(isOn){
+        btn.setAttribute('aria-pressed','false');
+        state.signals.delete(id);
+        const idx = state.selectionOrder.indexOf(id);
+        if(idx >= 0) state.selectionOrder.splice(idx,1);
+        updateLandingUI();
+        return;
+      }
+
+      if(state.signals.size >= 3){
+        const oldest = state.selectionOrder.shift();
+        if(oldest){
+          state.signals.delete(oldest);
+          const oldBtn = cardsHost.querySelector(`[data-signal="${oldest}"]`);
+          if(oldBtn){
+            oldBtn.setAttribute('aria-pressed','false');
+            popCard(oldBtn);
+          }
+        }
+      }
+
+      btn.setAttribute('aria-pressed','true');
+      state.signals.add(id);
+      state.selectionOrder.push(id);
+      updateLandingUI();
+    }
+
+    SIGNAL_GRID_ORDER.forEach(id=>{
+      const s = SIGNALS.find(x=>x.id===id);
+      const b = document.createElement('button');
+      b.type='button';
+      b.className = `signalCard tone-${s.tone}`;
+      b.textContent = s.label;
+      b.dataset.signal = s.id;
+      b.setAttribute('aria-pressed','false');
+      b.addEventListener('click', ()=>toggleSignal(s.id, b));
+      cardsHost.appendChild(b);
+    });
+
+    updateLandingUI();
+
+    // =========================
+    // PAGE LOCK (feed fit)
+    // =========================
+    function updateHeaderHeight(){
+      const h = document.querySelector('header')?.offsetHeight || 0;
+      document.documentElement.style.setProperty('--header-h', h + 'px');
+    }
+    function lockPageForFeed(){
+      document.body.classList.add('lock-scroll');
+      updateHeaderHeight();
+      window.addEventListener('resize', updateHeaderHeight);
+    }
+    function unlockPageFromFeed(){
+      document.body.classList.remove('lock-scroll');
+      window.removeEventListener('resize', updateHeaderHeight);
+    }
+
+    // =========================
+    // LIGHTBOX
+    // =========================
+    const lb     = el('lightbox');
+    const lbVid  = el('lbVideo');
+    const lbImg  = el('lbImg');
+    const lbClose= lb.querySelector('.lb-close');
+
+    function openLightboxVideo(src){
+      if(!src) return;
+      lbImg.style.display = 'none';
+      lbVid.style.display = 'block';
+      lbVid.src = src;
+      lb.classList.remove('hidden');
+      lbVid.muted = false;
+      lbVid.play().catch(()=>{});
+      document.addEventListener('keydown', onLbEsc);
+    }
+    function openLightboxImage(src, alt=''){
+      if(!src) return;
+      lbVid.pause(); lbVid.removeAttribute('src'); lbVid.load();
+      lbVid.style.display = 'none';
+      lbImg.style.display = 'block';
+      lbImg.src = src; lbImg.alt = alt || '';
+      lb.classList.remove('hidden');
+      document.addEventListener('keydown', onLbEsc);
+    }
+    function closeLightbox(){
+      lb.classList.add('hidden');
+      lbVid.pause(); lbVid.removeAttribute('src'); lbVid.load();
+      document.removeEventListener('keydown', onLbEsc);
+    }
+    function onLbEsc(e){ if(e.key === 'Escape') closeLightbox(); }
+    lb.addEventListener('click', (e)=>{
+      if(e.target === lb || e.target === lbClose) closeLightbox();
+    });
+
+    // =========================
+    // FEED: BUILD + BATCHING
+    // =========================
+    function showTarotBtn(){ el('toTarot').classList.add('is-visible'); }
+    function hideTarotBtn(){ el('toTarot').classList.remove('is-visible'); }
+
+    function removeFromPool(pool, picked){
+      const pickedIds = new Set(picked.map(p => p.id));
+      return pool.filter(p => !pickedIds.has(p.id));
+    }
+
+    function loadNextBatchWithBuffer(){
+      if(state.isLoadingBatch) return;
+      if(state.batch >= state.maxBatches) return;
+
+      state.isLoadingBatch = true;
+
+      showToast('updating your feed…', 'batch', state.batchDelayMs);
+
+      const host = el('feed');
+      setRefreshing(true);
+      host.style.pointerEvents = 'none';
+
+      setTimeout(() => {
+        appendNextBatch();
+
+        setTimeout(() => {
+          setRefreshing(false);
+          host.style.pointerEvents = '';
+          state.isLoadingBatch = false;
+
+          const atBottom = host.scrollTop + host.clientHeight >= host.scrollHeight - 8;
+          if(state.batch >= state.maxBatches && atBottom){
+            showTarotBtn();
+          }
+        }, 120);
+      }, state.batchDelayMs);
+    }
+
+    function setRefreshing(on){
+      const host = el('feed');
+      if(!host) return;
+      host.classList.toggle('is-refreshing', !!on);
+    }
+
+    function appendNextBatch(){
+      if(state.batch >= state.maxBatches) return;
+
+      showToast('updating your feed…', 'batch', 2000);
+
+      const host = el('feed');
+      const picked = pickBatch(state.remainingPool, profile, 10);
+      if(picked.length === 0){
+        state.batch = state.maxBatches;
+        return;
+      }
+
+      state.remainingPool = removeFromPool(state.remainingPool, picked);
+
+      picked.forEach((p)=>{
+        state.shown.push(p);
+        const card = document.createElement('article');
+        card.className = 'post';
+        card.innerHTML = makePostHTML(p, state.shown.length - 1);
+        attachPostInteractions(card, p, state.shown.length - 1);
+        host.appendChild(card);
+      });
+
+      state.batch += 1;
+    }
+
+    function buildFeed(){
+      const host = el('feed');
+      host.innerHTML = '';
+
+      state.shown = [];
+      state.batch = 0;
+      state.remainingPool = [...POOL];
+
+      hideTarotBtn();
+
+      appendNextBatch();
+
+      host.addEventListener('scroll', ()=>{
+        const depth = host.scrollTop/(host.scrollHeight - host.clientHeight);
+        state.scrollDepth = Math.max(state.scrollDepth, depth);
+
+        const atBottom = host.scrollTop + host.clientHeight >= host.scrollHeight - 8;
+        if(atBottom){
+          loadNextBatchWithBuffer();
+        }
+
+        if(state.batch >= state.maxBatches && atBottom){
+          showTarotBtn();
+        } else {
+          hideTarotBtn();
+        }
+      }, { passive:true });
+    }
+
+    function makePostHTML(p, i){
+      const name = p.name || ['Nova','Echo','Rune','Quill','Iris','Ky'][i%6];
+      const time = p.time || `${15 + (i%40)}m`;
+      const badgeFallback = p.badge || 'Recommended for you';
+
+      const badgeHTML = p.creditUrl
+        ? `<a class="badge badge-link" href="${p.creditUrl}" target="_blank" rel="noopener noreferrer" title="Open original source">
+             ${p.creditLabel || 'Original source'}
+           </a>`
+        : `<span class="badge">${badgeFallback}</span>`;
+
+      const src = p.video || p.img;
+      let mediaHTML = `<div class="media">media placeholder</div>`;
+      if (src) {
+        const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
+        if (isVideo) {
+          mediaHTML = `
+            <div class="media">
+              <video src="${src}" autoplay muted loop playsinline></video>
+              <button class="mute-toggle" aria-pressed="false" title="Unmute">🔇</button>
+            </div>`;
+        } else {
+          mediaHTML = `
+            <div class="media">
+              <img loading="lazy" src="${src}" alt="${p.alt || ''}">
+            </div>`;
+        }
+      }
+
+      return `
+        <div class="post-header">
+          <div class="avatar" aria-hidden="true"></div>
+          <div class="meta">
+            <div class="name">${name}</div>
+            <div class="muted" style="color:#D5D9FF;">
+              ${time} • ${badgeHTML}
+            </div>
+          </div>
+        </div>
+        <h4>${p.title || ''}</h4>
+        ${mediaHTML}
+        <p class="muted" style="color:#C9CEFF;">${p.body||''}</p>
+        <div class="actions">
+          <button class="btn secondary like-btn" data-act="like" aria-pressed="false" title="Like">
+            <span class="heart" aria-hidden="true">♡</span>
+            <span class="sr-only">Like</span>
+          </button>
+          <button class="btn secondary" data-act="save">Save</button>
+          <button class="btn secondary" data-act="share">Share</button>
+        </div>
+      `;
+    }
+
+    function attachPostInteractions(card, p, i){
+      const shareBtn = card.querySelector('[data-act="share"]');
+      if (shareBtn){
+        shareBtn.addEventListener('click', ()=>{
+          state.postsInteracted++;
+          track('act_share',{i, id:p.id});
+        });
+      }
+
+      const likeBtn = card.querySelector('.like-btn');
+      if (likeBtn){
+        likeBtn.addEventListener('click', () => {
+          const pressed = likeBtn.getAttribute('aria-pressed') === 'true';
+          const nowPressed = !pressed;
+          likeBtn.setAttribute('aria-pressed', String(nowPressed));
+          likeBtn.querySelector('.heart').textContent = nowPressed ? '♥' : '♡';
+
+          if(nowPressed){
+            state.liked.add(p.id);
+            state.postsInteracted++;
+            updateProfileFromPost(p, 0.15);
+            showToast('tuning: more like this', 'like', 1000);
+            track('act_like',{i, id:p.id, prof:{...profile}});
+          }else{
+            state.liked.delete(p.id);
+            track('act_unlike',{i, id:p.id});
+          }
+        });
+      }
+
+      const saveBtn = card.querySelector('[data-act="save"]');
+      if (saveBtn) {
+        saveBtn.setAttribute('aria-pressed','false');
+        saveBtn.addEventListener('click', ()=>{
+          const pressed = saveBtn.getAttribute('aria-pressed') === 'true';
+          const nowPressed = !pressed;
+          saveBtn.setAttribute('aria-pressed', String(nowPressed));
+          saveBtn.textContent = nowPressed ? 'Saved' : 'Save';
+
+          if(nowPressed){
+            state.saved.add(p.id);
+            state.postsInteracted++;
+            updateProfileFromPost(p, 0.22);
+            showToast('locked in: showing more like this', 'save', 1000);
+            track('act_save',{i, id:p.id, prof:{...profile}});
+          }else{
+            state.saved.delete(p.id);
+            track('act_unsave',{i, id:p.id});
+          }
+        });
+      }
+
+      const videoEl  = card.querySelector('video');
+      const muteBtn  = card.querySelector('.mute-toggle');
+      if (videoEl && muteBtn){
+        videoEl.muted = true;
+        muteBtn.setAttribute('aria-pressed','false');
+
+        muteBtn.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          videoEl.muted = !videoEl.muted;
+          if (videoEl.muted){
+            muteBtn.textContent = '🔇';
+            muteBtn.setAttribute('title','Unmute');
+            muteBtn.setAttribute('aria-pressed','false');
+          } else {
+            muteBtn.textContent = '🔊';
+            muteBtn.setAttribute('title','Mute');
+            muteBtn.setAttribute('aria-pressed','true');
+            videoEl.play().catch(()=>{});
+          }
+          track(videoEl.muted ? 'video_muted' : 'video_unmuted', { i, id:p.id });
+        });
+      }
+
+      const mediaWrap = card.querySelector('.media');
+      if (mediaWrap){
+        const v  = mediaWrap.querySelector('video');
+        const im = mediaWrap.querySelector('img');
+        if (v){
+          v.addEventListener('click', (e)=>{
+            e.preventDefault(); e.stopPropagation();
+            openLightboxVideo(v.currentSrc || v.src);
+          });
+        } else if (im){
+          im.addEventListener('click', (e)=>{
+            e.preventDefault(); e.stopPropagation();
+            openLightboxImage(im.currentSrc || im.src, im.alt || '');
+          });
+        }
+      }
+    }
+
+    // =========================
+    // START -> FEED
+    // =========================
+    const landing   = el('landing');
+    const feedView  = el('feedView');
+    const tarotView = el('tarotView');
+    const receipts  = el('receipts');
+    const interstitial = el('interstitial');
+
+    function showInterstitial(){
+      interstitial.classList.add('show');
+      interstitial.setAttribute('aria-hidden','false');
+    }
+    function hideInterstitial(){
+      interstitial.classList.remove('show');
+      interstitial.setAttribute('aria-hidden','true');
+    }
+
+    startBtn.addEventListener('click', ()=>{
+      if(state.signals.size !== 3) return;
+
+      setProfileFromSignals();
+
+      landing.classList.add('hidden');
+      showInterstitial();
+
+      setTimeout(()=>{
+        hideInterstitial();
+        feedView.classList.remove('hidden');
+        lockPageForFeed();
+
+        state.startedAt = Date.now();
+        el('currentVibeLabel').textContent = 'For You';
+
+        buildFeed();
+        track('start_session', { signals:[...state.signals], seed:{...state.seedProfile} });
+
+      }, 2000);
+    });
+
+    // =========================
+    // TAROT
+    // =========================
+    el('toTarot').addEventListener('click', ()=>{
+      hideTarotBtn();
+      revealTarot();
+      feedView.classList.add('hidden');
+
+      // >>> BREAK OUT OF wrap max-width for tarot
+      document.querySelector('.wrap')?.classList.add('tarot-mode');
+
+      tarotView.classList.remove('hidden');
+      triggerTarotReveal();
+
+      unlockPageFromFeed();
+    });
+
+    function triggerTarotReveal(){
+      tarotView.classList.remove('is-revealing');
+      void tarotView.offsetWidth;
+      tarotView.classList.add('is-revealing');
+      setTimeout(()=>tarotView.classList.remove('is-revealing'), 900);
+    }
+
+    function fmtProf(p){
+      return `fool ${(p.fool*100).toFixed(0)}% · wheel ${(p.wheel*100).toFixed(0)}% · death ${(p.death*100).toFixed(0)}% · tower ${(p.tower*100).toFixed(0)}%`;
+    }
+
+    function revealTarot(){
+      state.finalProfile = { ...profile };
+
+      const archetype = getArchetypeFromProfile(profile);
+      const vibe = vibeFromArchetype(archetype);
+
+      el('tarotImg').src = CARD_IMAGE[vibe] || CARD_IMAGE.melancholy_loop;
+
+      // still fill the back of the flippable card
+      const titleOnCard = el('tarotTitleOnCard');
+      const explOnCard  = el('tarotExplOnCard');
+      if(titleOnCard) titleOnCard.textContent = CARD_TITLE[vibe] || '';
+      if(explOnCard)  explOnCard.innerHTML = EXPLANATION_HTML[vibe] || '';
+
+      // receipts summary
+      const secs = ((Date.now()-state.startedAt)/1000)|0;
+      el('receiptSummary').textContent =
+        `Shown ${state.shown.length} posts in ${state.maxBatches} batches. ` +
+        `${state.postsInteracted} interactions, scroll depth ${(state.scrollDepth*100|0)}%, over ${secs}s.`;
+
+      el('receiptProfile').textContent =
+        `seed profile:\n  ${fmtProf(state.seedProfile)}\n\nfinal profile:\n  ${fmtProf(state.finalProfile)}\n\ninference:\n  ${archetype}`;
+
+      const likedArr = Array.from(state.liked);
+      const savedArr = Array.from(state.saved);
+
+      const likedItems = likedArr.slice(0,8).map(pid=>`<li>❤️ liked: ${pid}</li>`).join('');
+      const savedItems = savedArr.slice(0,8).map(pid=>`<li>🔖 saved: ${pid}</li>`).join('');
+
+      el('receiptList').innerHTML =
+        (likedArr.length || savedArr.length)
+          ? likedItems + savedItems
+          : `<li>No likes or saves this session.</li>`;
+
+      setTarotFlipped(false);
+    }
+
+    // Receipts toggle
+    el('seeReceipts').addEventListener('click', ()=>{
+      receipts.classList.remove('hidden');
+      tarotView.classList.add('hidden');
+    });
+    el('closeReceipts').addEventListener('click', ()=>{
+      receipts.classList.add('hidden');
+      tarotView.classList.remove('hidden');
+      triggerTarotReveal();
+    });
+
+    // Reset
+    el('resetBtn').addEventListener('click', ()=>{
+      state.signals.clear();
+      state.selectionOrder = [];
+      state.seedProfile = null;
+      state.finalProfile = null;
+
+      state.remainingPool = [];
+      state.shown = [];
+      state.batch = 0;
+
+      state.events = [];
+      state.postsInteracted = 0;
+      state.scrollDepth = 0;
+      state.startedAt = null;
+
+      state.liked = new Set();
+      state.saved = new Set();
+
+      profile.fool = 0.25; profile.wheel = 0.25; profile.death = 0.25; profile.tower = 0.25;
+
+      cardsHost.querySelectorAll('.signalCard').forEach(b=>b.setAttribute('aria-pressed','false'));
+      updateLandingUI();
+
+      // >>> restore wrap max-width for non-tarot views
+      document.querySelector('.wrap')?.classList.remove('tarot-mode');
+
+      tarotView.classList.add('hidden');
+      receipts.classList.add('hidden');
+      feedView.classList.add('hidden');
+      landing.classList.remove('hidden');
+
+      unlockPageFromFeed();
+      hideTarotBtn();
+    });
+
+    function track(type, detail){
+      state.events.push({type, detail, t:Date.now()});
+      console.log('[AO]', type, detail||'');
+    }
+
+    // ===== FEED MICRO-FEEDBACK TOAST =====
+    const toastEl = document.getElementById('feedToast');
+    const toastTextEl = document.getElementById('toastText');
+    let toastTimer = null;
+
+    function showToast(msg, kind='batch', ms=900){
+      if(!toastEl || !toastTextEl) return;
+
+      toastTextEl.textContent = msg;
+
+      toastEl.classList.remove('kind-like','kind-save','kind-batch','kind-dwell');
+      toastEl.classList.add(`kind-${kind}`);
+
+      toastEl.classList.remove('hidden');
+      void toastEl.offsetWidth;
+      toastEl.classList.add('show');
+
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=>{
+        toastEl.classList.remove('show');
+        setTimeout(()=> toastEl.classList.add('hidden'), 180);
+      }, ms);
+    }
+
+    // === TAROT FLIP TOGGLE ===
+    function setTarotFlipped(on){
+      const card = el('tarotCard');
+      if(!card) return;
+      card.classList.toggle('is-flipped', !!on);
+      card.setAttribute('aria-pressed', String(!!on));
+    }
+    function toggleTarotFlip(){
+      const card = el('tarotCard');
+      if(!card) return;
+      setTarotFlipped(!card.classList.contains('is-flipped'));
+    }
+    (function bindTarotFlip(){
+      const card = el('tarotCard');
+      if(!card) return;
+
+      card.addEventListener('click', toggleTarotFlip);
+      card.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          toggleTarotFlip();
+        }
+      });
+    })();
+
+    // NOTE: your original code references this element; keep it safe
+    function showTarotBtn(){ el('toTarot').classList.add('is-visible'); }
+    function hideTarotBtn(){ el('toTarot').classList.remove('is-visible'); }
+  </script>
+</body>
+</html>
