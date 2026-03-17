@@ -78,7 +78,7 @@
       inset: 0;
       z-index: 0;
       pointer-events:none;
-      background: #000 url("../assets/bg/stars.gif") repeat center;
+      background: #000 url("./assets/bg/stars.gif") repeat center;
       background-size: 320px 320px;
       opacity: 0.88;
     }
@@ -548,11 +548,11 @@
       appearance:none; border:1px solid rgba(255,255,255,.35);
       background:rgba(0,0,0,.45);
       color:#fff; font-size:18px; line-height:1; border-radius:999px;
-      /* bigger tap target */
       padding:10px 12px; cursor:pointer;
       backdrop-filter: blur(4px);
       min-width: 44px; min-height: 44px;
       display:flex; align-items:center; justify-content:center;
+      z-index: 10;
     }
     .lb-close:hover{ background:rgba(0,0,0,.6); }
 
