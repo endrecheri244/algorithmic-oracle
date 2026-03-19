@@ -1144,6 +1144,7 @@
       width: var(--tarot-w) !important;
       display:flex;
       justify-content:center;
+      align-items: center;
       gap: 10px;
       margin-top: 12px !important;
       flex-wrap: wrap;
@@ -1168,9 +1169,23 @@
       background: rgba(255,255,255,.22) !important;
       border-color: rgba(255,255,255,.40) !important;
     }
-    #tarotView .tarot-actions #resetBtn{
+    #tarotView .tarot-actions #seeReceipts{
       background: var(--yellow) !important;
       color:#000 !important;
+      border: none !important;
+      box-shadow:
+        0 0 0 4px rgba(230,187,61,.18),
+        0 0 26px rgba(230,187,61,.45),
+        0 14px 34px rgba(0,0,0,.32) !important;
+    }
+    #tarotView .tarot-actions #seeReceipts:hover,
+    #tarotView .tarot-actions #seeReceipts:focus-visible{
+      transform: translateY(-1px);
+      outline: none;
+      box-shadow:
+        0 0 0 5px rgba(230,187,61,.22),
+        0 0 32px rgba(230,187,61,.52),
+        0 18px 40px rgba(0,0,0,.36) !important;
     }
 
     #tarotTitleBelow,
@@ -1255,8 +1270,7 @@
             </div>
             <h3 class="tarot-title" id="tarotTitleBelow"></h3>
             <div class="tarot-actions">
-              <button class="btn secondary" id="seeReceipts">See receipts</button>
-              <button class="btn" id="resetBtn">Start over</button>
+              <button class="btn" id="seeReceipts">See receipts</button>
             </div>
             <div class="tarot-expl" id="tarotExpl"></div>
             <footer class="muted" style="color:#5b6470; margin-top:4px;">
@@ -1375,6 +1389,8 @@
     };
 
     const el = id => document.getElementById(id);
+    const toastEl     = el('feedToast');
+    const toastTextEl = el('toastText');
 
     // =========================
     // SIGNALS + MAPPING
@@ -1935,6 +1951,7 @@
     // SYSTEM TAKEOVER
     // =========================
     function triggerSystemTakeover(){
+      closeLightbox();
       const overlay = el('systemOverlay');
       const message = el('systemMessage');
       overlay.classList.add('darkening');
@@ -2093,7 +2110,7 @@
       projectionView.classList.remove('hidden');
     });
 
-    el('resetBtn').addEventListener('click', ()=>{ doReset(); });
+    if(el('resetBtn')) el('resetBtn').addEventListener('click', ()=>{ doReset(); });
     el('projResetBtn').addEventListener('click', ()=>{ doReset(); });
 
     function doReset(){
@@ -2121,9 +2138,7 @@
     // =========================
     // TOAST
     // =========================
-    const toastEl     = el('feedToast');
-    const toastTextEl = el('toastText');
-    let toastTimer    = null;
+    let toastTimer = null;
 
     function showToast(msg, kind='batch', ms=900){
       if(!toastEl||!toastTextEl) return;
