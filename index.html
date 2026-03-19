@@ -479,7 +479,7 @@
     #systemOverlay{
       position:fixed;
       inset:0;
-      z-index:9990;
+      z-index:99999;
       background:rgba(0,0,0,0);
       pointer-events:none;
       transition: background 2s ease;
@@ -493,7 +493,7 @@
 
     /* cinematic title card */
     #systemMessage{
-      position:absolute;
+      position:fixed;
       inset:0;
       display:flex;
       align-items:center;
@@ -524,7 +524,7 @@
 
     /* ===== RECEIPTS DOSSIER ===== */
     #receipts{
-      width: min(720px, 100%);
+      width: min(680px, 100%);
       margin: 0 auto;
       background: transparent !important;
       border: none !important;
@@ -535,125 +535,161 @@
     }
     .dossier{
       background: #ffffff;
-      border: 1px solid rgba(0,0,0,0.12);
-      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 8px;
       overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.30);
     }
-    .dossier-header{
+    .dossier-opening{
       background: #f2f2f7;
-      border-bottom: 2px solid rgba(0,0,0,0.10);
-      padding: 18px 26px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      padding: 14px 24px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
     }
-    .dossier-header-title{
-      font-family: "Courier New", Courier, monospace;
-      font-size: clamp(13px, 3vw, 15px);
+    .dossier-opening-id,
+    .dossier-opening-time{
+      font-size: clamp(10px, 2vw, 12px);
+      letter-spacing: .12em;
+      color: #555;
+    }
+    .dossier-inner{
+      padding: clamp(24px, 4vw, 36px) clamp(24px, 4vw, 36px) clamp(24px, 4vw, 36px);
+    }
+    /* behaviour stats */
+    .dossier-behaviour{
+      display: flex;
+      gap: 36px;
+      flex-wrap: wrap;
+      padding-bottom: 32px;
+      margin-bottom: 36px;
+    }
+    .dossier-stat{
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .dossier-stat-value{
+      font-family: "Montserrat", system-ui, sans-serif;
+      font-size: clamp(32px, 8vw, 48px);
+      font-weight: 500;
+      color: #2a2a2a;
+      line-height: 1;
+    }
+    .dossier-stat-label{
+      font-size: clamp(9px, 2vw, 10px);
       letter-spacing: .18em;
       text-transform: uppercase;
-      color: #1a1a2e;
+      color: #555;
     }
-    .dossier-header-id{
+    /* block heading (PROFILE INFERENCE, FEED MANIPULATION RECORD) */
+    .dossier-block{
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+    .dossier-block:last-of-type{
+      margin-bottom: 0;
+    }
+    .dossier-block-title{
       font-family: "Courier New", Courier, monospace;
       font-size: clamp(11px, 2.5vw, 13px);
-      letter-spacing: .12em;
-      color: #333344;
-    }
-    .dossier-section{
-      padding: 26px 26px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #444;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
       border-bottom: 1px solid rgba(0,0,0,0.08);
     }
-    .dossier-section:last-child{ border-bottom: none; }
-    .dossier-section-label{
-      font-size: clamp(12px, 3vw, 14px);
-      letter-spacing: .14em;
+    /* sub-label inside a block (OBSERVED TENDENCY, SYSTEM RESPONSE etc) */
+    .dossier-label{
+      font-size: clamp(9px, 2vw, 10px);
+      letter-spacing: .16em;
       text-transform: uppercase;
-      font-weight: 700;
-      color: #1a1a2e;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid rgba(0,0,0,0.15);
+      color: #777;
+      display: block;
+      margin-bottom: 6px;
     }
-    .dossier-row{
+    .dossier-text{
+      font-family: "Courier New", Courier, monospace;
+      font-size: clamp(12px, 3vw, 14px);
+      line-height: 1.75;
+      color: #1a1a2e;
+      margin-bottom: 16px;
+    }
+    .dossier-text:last-child{ margin-bottom: 0; }
+    /* passive note */
+    .dossier-passive{
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      border-left: 3px solid rgba(138,92,255,0.55);
+      font-family: "Courier New", Courier, monospace;
+      font-size: clamp(11px, 2.5vw, 13px);
+      line-height: 1.75;
+      color: #4a2f8a;
+      background: rgba(138,92,255,0.06);
+      border-radius: 0 4px 4px 0;
+    }
+    /* profile bars */
+    .dossier-profile-row{
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .dossier-profile-row:last-child{ border-bottom: none; margin-bottom: 0; }
+    .dossier-profile-meta{
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      gap: 16px;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(0,0,0,0.06);
-      flex-wrap: wrap;
     }
-    .dossier-row:last-child{ border-bottom: none; }
-    .dossier-key{
-      font-size: clamp(12px, 3vw, 14px);
-      letter-spacing: .08em;
-      color: #444455;
-      flex-shrink: 0;
-    }
-    .dossier-val{
-      font-size: clamp(12px, 3vw, 14px);
+    .dossier-profile-key{
+      font-size: clamp(10px, 2.5vw, 12px);
       letter-spacing: .06em;
-      color: #1a1a2e;
-      text-align: right;
+      color: #555;
     }
-    .dossier-val.highlight{
-      color: #fff;
-      letter-spacing: .12em;
+    .dossier-profile-val{
+      font-size: clamp(10px, 2.5vw, 12px);
+      color: #1a1a2e;
     }
     .dossier-bar-wrap{
-      margin-top: 8px;
       height: 4px;
-      background: rgba(0,0,0,0.08);
+      background: rgba(0,0,0,0.07);
       border-radius: 2px;
       overflow: hidden;
-      flex: 1 1 100%;
     }
     .dossier-bar-fill{
       height: 100%;
       border-radius: 2px;
-      background: rgba(138,92,255,0.85);
+      background: rgba(138,92,255,0.65);
       transition: width 0.8s ease;
     }
-    .dossier-tags{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .dossier-tag{
-      font-size: clamp(11px, 2.5vw, 13px);
-      letter-spacing: .06em;
-      padding: 6px 14px;
-      border-radius: 3px;
-      border: 1px solid rgba(0,0,0,0.14);
-      color: #555566;
-    }
-    .dossier-tag.active{
-      border-color: rgba(90,50,180,0.80);
-      color: #2a0a6e;
-      background: rgba(138,92,255,0.22);
-    }
+    /* verdict */
     .dossier-verdict{
-      padding: 32px 26px;
+      padding: 36px 24px;
       text-align: center;
-      border-top: 2px solid rgba(0,0,0,0.08);
-      background: rgba(138,92,255,0.06);
+      background: #ffffff;
+      border-top: 1px solid rgba(0,0,0,0.08);
     }
     .dossier-verdict-label{
-      font-size: clamp(11px, 2.5vw, 12px);
-      letter-spacing: .22em;
+      font-family: "Courier New", Courier, monospace;
+      font-size: clamp(11px, 2.5vw, 13px);
+      font-weight: 700;
+      letter-spacing: .18em;
       text-transform: uppercase;
-      color: #444455;
-      margin-bottom: 14px;
+      color: #555;
+      margin-bottom: 12px;
+      display: block;
     }
     .dossier-verdict-archetype{
       font-family: "Cinzel Decorative","Bodoni Moda",serif;
       font-size: clamp(20px, 5vw, 28px);
       letter-spacing: .04em;
-      color: #1a1a2e;
+      color: #6c3fcf;
       line-height: 1.25;
     }
     .receipts-actions{
@@ -1295,61 +1331,58 @@
 
     <!-- RECEIPTS -->
     <section id="receipts" class="card panel hidden">
-      <div class="dossier" id="dossierPanel">
+      <div class="dossier">
 
-        <div class="dossier-header">
-          <div class="dossier-header-title">subject file</div>
-          <div class="dossier-header-id" id="dossierId">session_id: —</div>
+        <!-- header -->
+        <div class="dossier-opening">
+          <span class="dossier-opening-id" id="dossierId">session_id: —</span>
+          <span class="dossier-opening-time" id="dossierTime">—</span>
         </div>
 
-        <!-- behaviour -->
-        <div class="dossier-section">
-          <div class="dossier-section-label">behavioural record</div>
-          <div class="dossier-row">
-            <span class="dossier-key">posts_served</span>
-            <span class="dossier-val" id="drPostsServed">—</span>
-          </div>
-          <div class="dossier-row">
-            <span class="dossier-key">interactions</span>
-            <span class="dossier-val" id="drInteractions">—</span>
-          </div>
-          <div class="dossier-row">
-            <span class="dossier-key">time_in_feed</span>
-            <span class="dossier-val" id="drTime">—</span>
-          </div>
-          <div class="dossier-row">
-            <span class="dossier-key">scroll_depth</span>
-            <span class="dossier-val" id="drScroll">—</span>
-            <div class="dossier-bar-wrap"><div class="dossier-bar-fill" id="drScrollBar" style="width:0%"></div></div>
-          </div>
-          <div class="dossier-row" style="margin-top:10px; flex-direction:column; align-items:flex-start; gap:8px;">
-            <span class="dossier-key">signals_engaged</span>
-            <div class="dossier-tags" id="drTags"></div>
-          </div>
-        </div>
+        <div class="dossier-inner">
 
-        <!-- profile drift -->
-        <div class="dossier-section">
-          <div class="dossier-section-label">profile inference</div>
-          <div id="drProfileRows"></div>
-        </div>
+          <!-- behaviour stats -->
+          <div class="dossier-behaviour">
+            <div class="dossier-stat">
+              <span class="dossier-stat-value" id="drScroll">—</span>
+              <span class="dossier-stat-label">scroll depth</span>
+            </div>
+            <div class="dossier-stat">
+              <span class="dossier-stat-value" id="drInteractions">—</span>
+              <span class="dossier-stat-label">interactions</span>
+            </div>
+          </div>
 
-        <!-- what the system did in response -->
-        <div class="dossier-section">
-          <div class="dossier-section-label">feed manipulation record</div>
-          <div id="drFeedShaped"></div>
+          <!-- profile inference -->
+          <div class="dossier-block">
+            <div class="dossier-block-title">profile inference</div>
+            <span class="dossier-label">observed tendency</span>
+            <div class="dossier-text" id="drTendency" style="margin-bottom:20px;">—</div>
+            <div class="dossier-passive" id="drPassive" style="display:none; margin-bottom:20px;"></div>
+            <div id="drProfileRows"></div>
+          </div>
+
+          <!-- feed manipulation -->
+          <div class="dossier-block">
+            <div class="dossier-block-title">feed manipulation record</div>
+            <span class="dossier-label">system response</span>
+            <div class="dossier-text" id="drSystemText" style="margin-bottom:28px;">—</div>
+            <span class="dossier-label">weight shift</span>
+            <div class="dossier-text" id="drWeightShift">—</div>
+          </div>
+
         </div>
 
         <!-- verdict -->
         <div class="dossier-verdict">
-          <div class="dossier-verdict-label">classification assigned</div>
+          <span class="dossier-verdict-label">classification assigned:</span>
           <div class="dossier-verdict-archetype" id="drArchetype">—</div>
         </div>
 
       </div>
 
       <div class="receipts-actions">
-        <button class="btn secondary" id="closeReceipts" style="letter-spacing:.10em; font-size:13px;">return to card</button>
+        <button class="btn secondary" id="closeReceipts" style="letter-spacing:.10em; font-size:13px; color:#1a1a2e; border:1px solid rgba(0,0,0,0.25); background:rgba(255,255,255,0.9);">continue</button>
       </div>
     </section>
   </div>
@@ -1952,6 +1985,8 @@
     // =========================
     function triggerSystemTakeover(){
       closeLightbox();
+      // pause all inline feed videos so they don't show through the overlay
+      document.querySelectorAll('#feed video').forEach(v=>{ v.pause(); });
       const overlay = el('systemOverlay');
       const message = el('systemMessage');
       overlay.classList.add('darkening');
@@ -2002,29 +2037,44 @@
         el('projQuestion').textContent  = proj.question;
       }
 
-      // receipts — behavioural record
+      // receipts — session opening
       const secs = ((Date.now()-state.startedAt)/1000)|0;
-      el('dossierId').textContent = 'session_id: ' + Math.random().toString(36).slice(2,10).toUpperCase();
-      el('drPostsServed').textContent  = state.shown.length;
-      el('drInteractions').textContent = state.postsInteracted;
-      el('drTime').textContent         = secs + 's';
+      const mins = Math.floor(secs/60);
+      const secsRem = secs % 60;
+      const timeStr = mins > 0 ? `${mins}m ${secsRem}s` : `${secs}s`;
+      el('dossierId').textContent  = 'session_id: ' + Math.random().toString(36).slice(2,10).toUpperCase();
+      el('dossierTime').textContent = timeStr + ' on feed';
+
+      // behaviour
       const scrollPct = state.scrollDepth * 100 | 0;
-      el('drScroll').textContent = scrollPct + '%';
-      setTimeout(()=>{ el('drScrollBar').style.width = scrollPct + '%'; }, 120);
+      el('drScroll').textContent       = scrollPct + '%';
+      el('drInteractions').textContent = state.postsInteracted;
 
-      // signals tags
-      const tagsEl = el('drTags');
-      tagsEl.innerHTML = '';
-      const allSignalIds = [...state.signals];
-      SIGNALS.forEach(s=>{
-        const tag = document.createElement('span');
-        tag.className = 'dossier-tag' + (allSignalIds.includes(s.id) ? ' active' : '');
-        tag.textContent = s.label;
-        tagsEl.appendChild(tag);
-      });
-
-      // profile rows
+      // observed tendency
       const profileKeys = ['fool','wheel','death','tower'];
+      const profileDescriptions = {
+        fool:  'you lingered on content about optimism, lightness, and escape from complexity',
+        wheel: 'you responded most to posts about status, trends, and the fear of being left behind',
+        death: 'you dwelled on content that confirmed feelings of futility, distance, and detachment',
+        tower: 'you engaged most with content designed to provoke — conflict, outrage, and collapse',
+      };
+      const dominantKeys = profileKeys.slice().sort((a,b)=>state.finalProfile[b]-state.finalProfile[a]);
+      const dominant = dominantKeys[0];
+      el('drTendency').textContent = profileDescriptions[dominant];
+
+      // passive note
+      const passiveEl = el('drPassive');
+      if(state.postsInteracted === 0){
+        passiveEl.style.display = 'block';
+        passiveEl.textContent = 'no explicit interactions recorded — this profile was built entirely from scroll behaviour and dwell time. you did not need to act. presence was enough.';
+      } else if(state.postsInteracted <= 2){
+        passiveEl.style.display = 'block';
+        passiveEl.textContent = 'minimal explicit interactions recorded — the majority of this profile was inferred from passive behaviour alone. what you paused on mattered more than what you chose.';
+      } else {
+        passiveEl.style.display = 'none';
+      }
+
+      // profile inference rows
       const profileLabels = { fool:'reality_filtered', wheel:'desire_engineered', death:'paralysis_induced', tower:'anger_optimised' };
       const rowsEl = el('drProfileRows');
       rowsEl.innerHTML = '';
@@ -2034,63 +2084,26 @@
         const diff     = finalVal - seedVal;
         const diffStr  = (diff>=0?'+':'') + diff + '%';
         rowsEl.innerHTML += `
-          <div class="dossier-row">
-            <span class="dossier-key">${profileLabels[k]}</span>
-            <span class="dossier-val">${seedVal}% \u2192 ${finalVal}% <span style="color:rgba(138,92,255,0.8)">(${diffStr})</span></span>
-            <div class="dossier-bar-wrap"><div class="dossier-bar-fill" style="width:${finalVal}%; background:rgba(138,92,255,${0.35+(finalVal/100)*0.55})"></div></div>
+          <div class="dossier-profile-row">
+            <div class="dossier-profile-meta">
+              <span class="dossier-profile-key">${profileLabels[k]}</span>
+              <span class="dossier-profile-val">${seedVal}% → ${finalVal}% (${diffStr})</span>
+            </div>
+            <div class="dossier-bar-wrap"><div class="dossier-bar-fill" style="width:${finalVal}%"></div></div>
           </div>`;
       });
 
-      // personal statements
-      const profileDescriptions = {
-        fool:  'you lingered on content about optimism, lightness, and escape from complexity',
-        wheel: 'you responded most to posts about status, trends, and the fear of being left behind',
-        death: 'you dwelled on content that confirmed feelings of futility, distance, and detachment',
-        tower: 'you engaged most with content designed to provoke — conflict, outrage, and collapse',
+      // feed manipulation
+      const shapingStatements = {
+        fool:  'content promoting positivity, aesthetic pleasure, and frictionless living was progressively amplified in your feed.',
+        wheel: 'content generating urgency, social comparison, and trend anxiety was progressively amplified in your feed.',
+        death: 'content reinforcing disengagement, irony, and low-stakes despair was progressively amplified in your feed.',
+        tower: 'content designed to provoke outrage, moral judgement, and tribal conflict was progressively amplified in your feed.',
       };
-      const dominantKeys = profileKeys.slice().sort((a,b)=>state.finalProfile[b]-state.finalProfile[a]);
-      const statementsEl = document.createElement('div');
-      dominantKeys.slice(0,1).forEach(k=>{
-        statementsEl.innerHTML += `
-          <div class="dossier-statement">
-            <span class="stmt-key">observed tendency</span>
-            ${profileDescriptions[k]}
-          </div>`;
-      });
-      const wasPassive   = state.postsInteracted === 0;
-      const lowInteract  = state.postsInteracted <= 2;
-      if(wasPassive){
-        statementsEl.innerHTML += `<div class="dossier-passive-note">no explicit interactions recorded \u2014 this profile was built entirely from scroll behaviour and dwell time. you did not need to act. presence was enough.</div>`;
-      } else if(lowInteract){
-        statementsEl.innerHTML += `<div class="dossier-passive-note">minimal explicit interactions recorded \u2014 the majority of this profile was inferred from passive behaviour alone. what you paused on mattered more than what you chose.</div>`;
-      }
-      rowsEl.parentElement.insertBefore(statementsEl, rowsEl);
-
-      // feed manipulation record
-      const feedShapedEl = el('drFeedShaped');
-      feedShapedEl.innerHTML = '';
-      const dominant = dominantKeys[0];
       const dominantFinal = (state.finalProfile[dominant]*100).toFixed(0);
       const dominantSeed  = (state.seedProfile[dominant]*100).toFixed(0);
-      const shapingStatements = {
-        fool:  'content promoting positivity, aesthetic pleasure, and frictionless living was progressively amplified in your feed',
-        wheel: 'content generating urgency, social comparison, and trend anxiety was progressively amplified in your feed',
-        death: 'content reinforcing disengagement, irony, and low-stakes despair was progressively amplified in your feed',
-        tower: 'content designed to provoke outrage, moral judgement, and tribal conflict was progressively amplified in your feed',
-      };
-      feedShapedEl.innerHTML = `
-        <div class="dossier-statement">
-          <span class="stmt-key">system response</span>
-          ${shapingStatements[dominant]}
-        </div>
-        <div class="dossier-statement">
-          <span class="stmt-key">weight shift</span>
-          your dominant category moved from ${dominantSeed}% at session start to ${dominantFinal}% by the end \u2014 a shift driven entirely by your passive engagement
-        </div>
-        <div class="dossier-statement">
-          <span class="stmt-key">projected outcome</span>
-          continued exposure would further narrow the range of perspectives, emotions, and ideas served to you
-        </div>`;
+      el('drSystemText').textContent  = shapingStatements[dominant];
+      el('drWeightShift').textContent = `your dominant category moved from ${dominantSeed}% at session start to ${dominantFinal}% by the end — a shift driven entirely by your passive engagement.`;
 
       // verdict
       el('drArchetype').textContent = CARD_TITLE[vibe] || archetype;
