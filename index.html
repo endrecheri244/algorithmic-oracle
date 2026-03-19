@@ -321,6 +321,7 @@
 
     /* ===== FEED ===== */
     #feedView.card{ background:transparent; border:none; box-shadow:none; padding:0; }
+    #feedView:not(.hidden){ display:block; }
     #feedView{ width: min(860px, 100%); }
     #feedView .bar{
       display:flex;
@@ -661,6 +662,106 @@
       gap: 12px;
       margin-top: 24px;
       flex-wrap: wrap;
+    }
+
+    /* ===== PROJECTION SCREEN ===== */
+    #projectionView{
+      width: min(640px, 92vw);
+      margin: 0 auto;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 160px);
+      padding: clamp(32px, 6vw, 64px) 16px;
+      text-align: center;
+      gap: 0;
+    }
+    #projectionView:not(.hidden){
+      display: flex;
+    }
+    #projectionView.card.panel{
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .proj-eyebrow{
+      font-family: "Courier New", Courier, monospace;
+      font-size: clamp(10px, 2vw, 12px);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 32px;
+    }
+    .proj-statement{
+      font-family: "Montserrat", system-ui, sans-serif;
+      font-size: clamp(13px, 3vw, 16px);
+      font-weight: 600;
+      letter-spacing: .02em;
+      line-height: 1.75;
+      color: rgba(220,228,255,0.72);
+      margin-bottom: 52px;
+      max-width: 520px;
+    }
+    .proj-divider{
+      width: 40px;
+      height: 1px;
+      background: rgba(255,255,255,0.20);
+      margin: 0 auto 52px;
+    }
+    .proj-question-label{
+      font-family: "Courier New", Courier, monospace;
+      font-size: clamp(10px, 2vw, 12px);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 14px;
+    }
+    .proj-question{
+      font-family: "Bodoni Moda", Georgia, serif;
+      font-weight: 500;
+      font-style: italic;
+      font-size: clamp(18px, 4.5vw, 28px);
+      font-weight: 400;
+      letter-spacing: .02em;
+      line-height: 1.55;
+      color: #ffffff;
+      margin-bottom: 56px;
+      max-width: 480px;
+    }
+    .proj-actions{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .proj-actions .btn-start-over{
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.28);
+      background: transparent;
+      color: rgba(255,255,255,0.65);
+      font-family: "Montserrat", system-ui, sans-serif;
+      font-size: clamp(12px, 2.5vw, 14px);
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: lowercase;
+      padding: 12px 28px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background .18s ease, color .18s ease, border-color .18s ease;
+      min-height: 44px;
+    }
+    .proj-actions .btn-start-over:hover,
+    .proj-actions .btn-start-over:focus-visible{
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border-color: rgba(255,255,255,0.50);
+      outline: none;
+    }
+    .proj-actions .proj-note{
+      font-family: "Courier New", Courier, monospace;
+      font-size: 11px;
+      letter-spacing: .10em;
+      color: rgba(255,255,255,0.22);
     }
     .dossier-statement{
       font-size: clamp(13px, 3vw, 15px);
@@ -1166,6 +1267,18 @@
       </div>
     </section>
 
+    <!-- PROJECTION -->
+    <section id="projectionView" class="card panel hidden">
+      <div class="proj-eyebrow">what comes next</div>
+      <p class="proj-statement" id="projStatement"></p>
+      <div class="proj-divider"></div>
+      <div class="proj-question-label">Take this with you</div>
+      <p class="proj-question" id="projQuestion"></p>
+      <div class="proj-actions">
+        <button class="btn-start-over" id="projResetBtn">start over</button>
+      </div>
+    </section>
+
     <!-- RECEIPTS -->
     <section id="receipts" class="card panel hidden">
       <div class="dossier" id="dossierPanel">
@@ -1236,6 +1349,9 @@
   </div>
 
   <script>
+    // =========================
+    // PROFILE + STATE
+    // =========================
     const profile = { fool:0.25, wheel:0.25, death:0.25, tower:0.25 };
 
     const state = {
@@ -1254,12 +1370,15 @@
       saved: new Set(),
       selectionOrder: [],
       isLoadingBatch: false,
-      takeoverTriggered: false,
       batchDelayMs: 1600,
+      takeoverTriggered: false,
     };
 
     const el = id => document.getElementById(id);
 
+    // =========================
+    // SIGNALS + MAPPING
+    // =========================
     const SIGNALS = [
       { id:'keep_light',  label:'keep it light',        tone:'yellow' },
       { id:'discourse',   label:'discourse check',      tone:'orange' },
@@ -1283,20 +1402,23 @@
     ];
 
     const SIGNAL_TO_WEIGHTS = {
-      "keep it light":      { fool: 0.40, wheel: 0.10, death: 0.05, tower: 0.05 },
-      "discourse check":    { fool: 0.05, wheel: 0.20, death: 0.10, tower: 0.35 },
-      "inspiration boost":  { fool: 0.25, wheel: 0.10, death: 0.05, tower: 0.05 },
-      "glow up mode":       { fool: 0.15, wheel: 0.35, death: 0.05, tower: 0.05 },
-      "spice it up":        { fool: 0.10, wheel: 0.30, death: 0.05, tower: 0.15 },
-      "real talk":          { fool: 0.05, wheel: 0.10, death: 0.20, tower: 0.15 },
-      "low-energy scroll":  { fool: 0.05, wheel: 0.05, death: 0.40, tower: 0.05 },
-      "chill & decompress": { fool: 0.15, wheel: 0.05, death: 0.25, tower: 0.05 },
-      "make it feel new":   { fool: 0.10, wheel: 0.40, death: 0.05, tower: 0.05 },
-      "aesthetic reset":    { fool: 0.20, wheel: 0.25, death: 0.05, tower: 0.05 },
-      "cozy scroll":        { fool: 0.20, wheel: 0.05, death: 0.20, tower: 0.05 },
-      "quiet focus":        { fool: 0.05, wheel: 0.05, death: 0.25, tower: 0.05 },
+      "keep it light":      { fool:0.40, wheel:0.10, death:0.05, tower:0.05 },
+      "discourse check":    { fool:0.05, wheel:0.20, death:0.10, tower:0.35 },
+      "inspiration boost":  { fool:0.25, wheel:0.10, death:0.05, tower:0.05 },
+      "glow up mode":       { fool:0.15, wheel:0.35, death:0.05, tower:0.05 },
+      "spice it up":        { fool:0.10, wheel:0.30, death:0.05, tower:0.15 },
+      "real talk":          { fool:0.05, wheel:0.10, death:0.20, tower:0.15 },
+      "low-energy scroll":  { fool:0.05, wheel:0.05, death:0.40, tower:0.05 },
+      "chill & decompress": { fool:0.15, wheel:0.05, death:0.25, tower:0.05 },
+      "make it feel new":   { fool:0.10, wheel:0.40, death:0.05, tower:0.05 },
+      "aesthetic reset":    { fool:0.20, wheel:0.25, death:0.05, tower:0.05 },
+      "cozy scroll":        { fool:0.20, wheel:0.05, death:0.20, tower:0.05 },
+      "quiet focus":        { fool:0.05, wheel:0.05, death:0.25, tower:0.05 },
     };
 
+    // =========================
+    // POSTS
+    // =========================
     const POSTS = {
       live_laugh_leap:[
         { title:'', body:'trust fall with the internet', badge:'', img:'./assets/feed/fool/fool1.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
@@ -1323,8 +1445,8 @@
         { title:'', body:'', badge:'', img:'./assets/feed/wheel/wheel10.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
       ],
       vulnerability_irony:[
-        { title:'confession: i\'m fine lol', body:'(i am not fine)', badge:'Because you paused on confessions', img:'./assets/feed/tower/tower1.jpg', alt:'', creditUrl:'https://x.com/onlyyagirl_/status/1981148680377028841', creditLabel:'Original post' },
-        { title:'if it\'s breaking, i\'m broadcasting', body:'meltdown but make it content', badge:'Because you watch chaos streams', img:'./assets/feed/tower/tower2.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DESn5I6vWIH/', creditLabel:'Original post' },
+        { title:"confession: i'm fine lol", body:'(i am not fine)', badge:'Because you paused on confessions', img:'./assets/feed/tower/tower1.jpg', alt:'', creditUrl:'https://x.com/onlyyagirl_/status/1981148680377028841', creditLabel:'Original post' },
+        { title:"if it's breaking, i'm broadcasting", body:'meltdown but make it content', badge:'Because you watch chaos streams', img:'./assets/feed/tower/tower2.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DESn5I6vWIH/', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/tower/tower3.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/tower/tower4.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/tower/tower5.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
@@ -1346,6 +1468,25 @@
         { title:'', body:'', badge:'', img:'./assets/feed/death/death9.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/death/death10.mp4', alt:'', creditUrl:'https://www.instagram.com/p/DPxpqAEjthK', creditLabel:'Original post' },
       ],
+    };
+
+    const PROJECTION_DATA = {
+      live_laugh_leap: {
+        statement: "At your current trajectory, content depicting conflict, hardship, or systemic inequality would represent less than 4% of your feed within 180 days. The algorithm has learned that you prefer not to look.",
+        question:  "What have you been making easier to ignore?"
+      },
+      fomo_whiplash: {
+        statement: "At your current trajectory, the algorithm would present you with an average of 34 purchasable items per day within 180 days. Your attention has been classified as a reliable commercial signal.",
+        question:  "When did wanting things start to feel like having a personality?"
+      },
+      melancholy_loop: {
+        statement: "At your current trajectory, content designed to induce hopelessness or disengagement would dominate 77% of your feed within 180 days. The algorithm has learned that despair keeps you scrolling longer than hope.",
+        question:  "When did cynicism start feeling more honest than hope?"
+      },
+      vulnerability_irony: {
+        statement: "At your current trajectory, an estimated 88% of your feed would consist of conflict-optimised content within 180 days. The algorithm has learned that your outrage is its most reliable engagement signal.",
+        question:  "Is the outrage yours, or did the feed hand it to you?"
+      },
     };
 
     const CARD_IMAGE = {
@@ -1428,8 +1569,7 @@
       return (t.fool||0)*prof.fool + (t.wheel||0)*prof.wheel + (t.death||0)*prof.death + (t.tower||0)*prof.tower;
     }
     function pickBatch(pool, prof, n=10){
-      const ranked = [...pool].sort((a,b)=>scorePost(b, prof) - scorePost(a, prof));
-      return ranked.slice(0, n);
+      return [...pool].sort((a,b)=>scorePost(b,prof)-scorePost(a,prof)).slice(0,n);
     }
     function updateProfileFromPost(post, strength){
       const t = post.tags || {};
@@ -1439,7 +1579,6 @@
       profile.tower += (t.tower||0) * strength;
       normalizeProfile(profile);
     }
-
     function getArchetypeFromProfile(prof){
       let best = 'fool', bestVal = prof.fool;
       for(const k of ['wheel','death','tower']){
@@ -1448,13 +1587,15 @@
       return best;
     }
     function vibeFromArchetype(a){
-      if(a === 'fool')  return 'live_laugh_leap';
-      if(a === 'wheel') return 'fomo_whiplash';
-      if(a === 'death') return 'melancholy_loop';
+      if(a==='fool')  return 'live_laugh_leap';
+      if(a==='wheel') return 'fomo_whiplash';
+      if(a==='death') return 'melancholy_loop';
       return 'vulnerability_irony';
     }
 
-    // ===== LANDING =====
+    // =========================
+    // LANDING
+    // =========================
     const cardsHost = el('signalCards');
     const counterEl = el('counter');
     const startBtn  = el('startBtn');
@@ -1465,7 +1606,6 @@
       btn.classList.add('pop');
       setTimeout(()=>btn.classList.remove('pop'), 220);
     }
-
     function updateLandingUI(){
       counterEl.textContent = `${state.signals.size}/3 selected`;
       startBtn.disabled = state.signals.size !== 3;
@@ -1480,7 +1620,6 @@
         startBtn.classList.remove('ready');
       }
     }
-
     function toggleSignal(id, btn){
       const isOn = btn.getAttribute('aria-pressed') === 'true';
       popCard(btn);
@@ -1517,13 +1656,14 @@
       b.addEventListener('click', ()=>toggleSignal(s.id, b));
       cardsHost.appendChild(b);
     });
-
     updateLandingUI();
 
-    // ===== PAGE LOCK =====
+    // =========================
+    // PAGE LOCK
+    // =========================
     function updateHeaderHeight(){
       const h = document.querySelector('header')?.offsetHeight || 0;
-      document.documentElement.style.setProperty('--header-h', h + 'px');
+      document.documentElement.style.setProperty('--header-h', h+'px');
     }
     function lockPageForFeed(){
       document.body.classList.add('lock-scroll');
@@ -1535,10 +1675,12 @@
       window.removeEventListener('resize', updateHeaderHeight);
     }
 
-    // ===== LIGHTBOX =====
-    const lb     = el('lightbox');
-    const lbVid  = el('lbVideo');
-    const lbImg  = el('lbImg');
+    // =========================
+    // LIGHTBOX
+    // =========================
+    const lb    = el('lightbox');
+    const lbVid = el('lbVideo');
+    const lbImg = el('lbImg');
 
     function openLightboxVideo(src){
       if(!src) return;
@@ -1555,7 +1697,7 @@
       lbVid.pause(); lbVid.removeAttribute('src'); lbVid.load();
       lbVid.style.display = 'none';
       lbImg.style.display = 'block';
-      lbImg.src = src; lbImg.alt = alt || '';
+      lbImg.src = src; lbImg.alt = alt||'';
       lb.classList.remove('hidden');
       document.addEventListener('keydown', onLbEsc);
     }
@@ -1564,65 +1706,40 @@
       lbVid.pause(); lbVid.removeAttribute('src'); lbVid.load();
       document.removeEventListener('keydown', onLbEsc);
     }
-    function onLbEsc(e){ if(e.key === 'Escape') closeLightbox(); }
+    function onLbEsc(e){ if(e.key==='Escape') closeLightbox(); }
     lb.addEventListener('click', (e)=>{
-      const isMedia = e.target === lbVid || e.target === lbImg;
+      const isMedia = e.target===lbVid || e.target===lbImg;
       if(!isMedia) closeLightbox();
     });
 
-    // ===== FEED =====
+    // =========================
+    // FEED
+    // =========================
     function showTarotBtn(){ /* no-op: replaced by system takeover */ }
     function hideTarotBtn(){ /* no-op */ }
 
-    function triggerSystemTakeover(){
-      const overlay  = el('systemOverlay');
-      const message  = el('systemMessage');
-
-      // step 1: screen darkens over 2s
-      overlay.classList.add('darkening');
-
-      // step 2: text fades in after the dark has settled (1.8s in)
-      setTimeout(()=>{
-        message.classList.add('visible');
-      }, 1800);
-
-      // step 3: sit with the message for 3 seconds
-      // step 4: text fades out
-      setTimeout(()=>{
-        message.classList.add('fade-out');
-      }, 1800 + 3000);
-
-      // step 5: transition to tarot after text has faded
-      setTimeout(()=>{
-        overlay.classList.remove('darkening');
-        overlay.style.background = 'rgba(0,0,0,0)';
-        message.classList.remove('visible','fade-out');
-
-        revealTarot();
-        feedView.classList.add('hidden');
-        document.querySelector('.wrap')?.classList.add('tarot-mode');
-        tarotView.classList.remove('hidden');
-        triggerTarotReveal();
-        unlockPageFromFeed();
-      }, 1800 + 3000 + 1400);
+    function removeFromPool(pool, picked){
+      const pickedIds = new Set(picked.map(p=>p.id));
+      return pool.filter(p=>!pickedIds.has(p.id));
     }
 
-    function removeFromPool(pool, picked){
-      const pickedIds = new Set(picked.map(p => p.id));
-      return pool.filter(p => !pickedIds.has(p.id));
+    function setRefreshing(on){
+      const host = el('feed');
+      if(!host) return;
+      host.classList.toggle('is-refreshing', !!on);
     }
 
     function loadNextBatchWithBuffer(){
       if(state.isLoadingBatch) return;
       if(state.batch >= state.maxBatches) return;
       state.isLoadingBatch = true;
-      showToast('updating your feed…', 'batch', state.batchDelayMs);
+      showToast('updating your feed\u2026', 'batch', state.batchDelayMs);
       const host = el('feed');
       setRefreshing(true);
       host.style.pointerEvents = 'none';
-      setTimeout(() => {
+      setTimeout(()=>{
         appendNextBatch();
-        setTimeout(() => {
+        setTimeout(()=>{
           setRefreshing(false);
           host.style.pointerEvents = '';
           state.isLoadingBatch = false;
@@ -1635,24 +1752,18 @@
       }, state.batchDelayMs);
     }
 
-    function setRefreshing(on){
-      const host = el('feed');
-      if(!host) return;
-      host.classList.toggle('is-refreshing', !!on);
-    }
-
     function appendNextBatch(){
       if(state.batch >= state.maxBatches) return;
       const host = el('feed');
       const picked = pickBatch(state.remainingPool, profile, 10);
-      if(picked.length === 0){ state.batch = state.maxBatches; return; }
+      if(picked.length===0){ state.batch = state.maxBatches; return; }
       state.remainingPool = removeFromPool(state.remainingPool, picked);
       picked.forEach((p)=>{
         state.shown.push(p);
         const card = document.createElement('article');
         card.className = 'post';
-        card.innerHTML = makePostHTML(p, state.shown.length - 1);
-        attachPostInteractions(card, p, state.shown.length - 1);
+        card.innerHTML = makePostHTML(p, state.shown.length-1);
+        attachPostInteractions(card, p, state.shown.length-1);
         host.appendChild(card);
       });
       state.batch += 1;
@@ -1667,7 +1778,7 @@
       hideTarotBtn();
       appendNextBatch();
       host.addEventListener('scroll', ()=>{
-        const depth = host.scrollTop/(host.scrollHeight - host.clientHeight);
+        const depth = host.scrollTop/(host.scrollHeight-host.clientHeight);
         state.scrollDepth = Math.max(state.scrollDepth, depth);
         const atBottom = host.scrollTop + host.clientHeight >= host.scrollHeight - 8;
         if(atBottom) loadNextBatchWithBuffer();
@@ -1680,42 +1791,35 @@
 
     function makePostHTML(p, i){
       const name = p.name || ['Nova','Echo','Rune','Quill','Iris','Ky'][i%6];
-      const time = p.time || `${15 + (i%40)}m`;
+      const time = p.time || `${15+(i%40)}m`;
       const badgeFallback = p.badge || 'Recommended for you';
       const badgeHTML = p.creditUrl
-        ? `<a class="badge badge-link" href="${p.creditUrl}" target="_blank" rel="noopener noreferrer">${p.creditLabel || 'Original source'}</a>`
+        ? `<a class="badge badge-link" href="${p.creditUrl}" target="_blank" rel="noopener noreferrer">${p.creditLabel||'Original source'}</a>`
         : `<span class="badge">${badgeFallback}</span>`;
-
       const src = p.img || p.video;
       let mediaHTML = `<div class="media">media placeholder</div>`;
       if(src){
         const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
         if(isVideo){
-          mediaHTML = `<div class="media">
-            <video src="${src}" autoplay muted loop playsinline></video>
-            <button class="mute-toggle" aria-pressed="false" title="Unmute">🔇</button>
-          </div>`;
+          mediaHTML = `<div class="media"><video src="${src}" autoplay muted loop playsinline></video><button class="mute-toggle" aria-pressed="false" title="Unmute">&#x1F507;</button></div>`;
         } else {
-          mediaHTML = `<div class="media">
-            <img loading="lazy" src="${src}" alt="${p.alt || ''}">
-          </div>`;
+          mediaHTML = `<div class="media"><img loading="lazy" src="${src}" alt="${p.alt||''}"></div>`;
         }
       }
-
       return `
         <div class="post-header">
           <div class="avatar" aria-hidden="true"></div>
           <div class="meta">
             <div class="name">${name}</div>
-            <div class="muted" style="color:#D5D9FF;">${time} • ${badgeHTML}</div>
+            <div class="muted" style="color:#D5D9FF;">${time} \u2022 ${badgeHTML}</div>
           </div>
         </div>
-        <h4>${p.title || ''}</h4>
+        <h4>${p.title||''}</h4>
         ${mediaHTML}
         <p class="muted" style="color:#C9CEFF;">${p.body||''}</p>
         <div class="actions">
           <button class="btn secondary like-btn" data-act="like" aria-pressed="false" title="Like">
-            <span class="heart" aria-hidden="true">♡</span>
+            <span class="heart" aria-hidden="true">&#9825;</span>
             <span class="sr-only">Like</span>
           </button>
           <button class="btn secondary" data-act="save">Save</button>
@@ -1728,7 +1832,7 @@
         likeBtn.addEventListener('click', ()=>{
           const nowPressed = likeBtn.getAttribute('aria-pressed') !== 'true';
           likeBtn.setAttribute('aria-pressed', String(nowPressed));
-          likeBtn.querySelector('.heart').textContent = nowPressed ? '♥' : '♡';
+          likeBtn.querySelector('.heart').innerHTML = nowPressed ? '&#9829;' : '&#9825;';
           if(nowPressed){
             state.liked.add(p.id);
             state.postsInteracted++;
@@ -1741,7 +1845,6 @@
           }
         });
       }
-
       const saveBtn = card.querySelector('[data-act="save"]');
       if(saveBtn){
         saveBtn.setAttribute('aria-pressed','false');
@@ -1761,7 +1864,6 @@
           }
         });
       }
-
       const videoEl = card.querySelector('video');
       const muteBtn = card.querySelector('.mute-toggle');
       if(videoEl && muteBtn){
@@ -1770,36 +1872,49 @@
         muteBtn.addEventListener('click', (e)=>{
           e.stopPropagation();
           videoEl.muted = !videoEl.muted;
-          muteBtn.textContent = videoEl.muted ? '🔇' : '🔊';
+          muteBtn.innerHTML = videoEl.muted ? '&#x1F507;' : '&#x1F508;';
           muteBtn.setAttribute('title', videoEl.muted ? 'Unmute' : 'Mute');
           muteBtn.setAttribute('aria-pressed', String(!videoEl.muted));
           if(!videoEl.muted) videoEl.play().catch(()=>{});
           track(videoEl.muted ? 'video_muted' : 'video_unmuted', {i, id:p.id});
         });
       }
-
       const mediaWrap = card.querySelector('.media');
       if(mediaWrap){
         const v  = mediaWrap.querySelector('video');
         const im = mediaWrap.querySelector('img');
         if(v){
-          v.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openLightboxVideo(v.currentSrc || v.src); });
+          v.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openLightboxVideo(v.currentSrc||v.src); });
         } else if(im){
-          im.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openLightboxImage(im.currentSrc || im.src, im.alt || ''); });
+          im.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openLightboxImage(im.currentSrc||im.src, im.alt||''); });
         }
       }
     }
 
-    // ===== START =====
-    const landing   = el('landing');
-    const feedView  = el('feedView');
-    const tarotView = el('tarotView');
-    const receipts  = el('receipts');
-    const interstitial = el('interstitial');
+    // =========================
+    // SCREEN ELEMENTS
+    // =========================
+    const landing        = el('landing');
+    const feedView       = el('feedView');
+    const tarotView      = el('tarotView');
+    const receipts       = el('receipts');
+    const projectionView = el('projectionView');
+    const interstitial   = el('interstitial');
 
     function showInterstitial(){ interstitial.classList.add('show'); interstitial.setAttribute('aria-hidden','false'); }
     function hideInterstitial(){ interstitial.classList.remove('show'); interstitial.setAttribute('aria-hidden','true'); }
 
+    function hideAllScreens(){
+      landing.classList.add('hidden');
+      feedView.classList.add('hidden');
+      tarotView.classList.add('hidden');
+      receipts.classList.add('hidden');
+      projectionView.classList.add('hidden');
+    }
+
+    // =========================
+    // START
+    // =========================
     startBtn.addEventListener('click', ()=>{
       if(state.signals.size !== 3) return;
       setProfileFromSignals();
@@ -1816,8 +1931,27 @@
       }, 2000);
     });
 
-    // ===== TAROT =====
-
+    // =========================
+    // SYSTEM TAKEOVER
+    // =========================
+    function triggerSystemTakeover(){
+      const overlay = el('systemOverlay');
+      const message = el('systemMessage');
+      overlay.classList.add('darkening');
+      setTimeout(()=>{ message.classList.add('visible'); }, 1800);
+      setTimeout(()=>{ message.classList.add('fade-out'); }, 1800+3000);
+      setTimeout(()=>{
+        overlay.classList.remove('darkening');
+        overlay.style.background = 'rgba(0,0,0,0)';
+        message.classList.remove('visible','fade-out');
+        revealTarot();
+        hideAllScreens();
+        document.querySelector('.wrap')?.classList.add('tarot-mode');
+        tarotView.classList.remove('hidden');
+        triggerTarotReveal();
+        unlockPageFromFeed();
+      }, 1800+3000+1400);
+    }
 
     function triggerTarotReveal(){
       tarotView.classList.remove('is-revealing');
@@ -1826,38 +1960,46 @@
       setTimeout(()=>tarotView.classList.remove('is-revealing'), 900);
     }
 
+    // =========================
+    // TAROT
+    // =========================
     function fmtProf(p){
-      return `fool ${(p.fool*100).toFixed(0)}% · wheel ${(p.wheel*100).toFixed(0)}% · death ${(p.death*100).toFixed(0)}% · tower ${(p.tower*100).toFixed(0)}%`;
+      return `fool ${(p.fool*100).toFixed(0)}% \u00b7 wheel ${(p.wheel*100).toFixed(0)}% \u00b7 death ${(p.death*100).toFixed(0)}% \u00b7 tower ${(p.tower*100).toFixed(0)}%`;
     }
 
     function revealTarot(){
       state.finalProfile = { ...profile };
       const archetype = getArchetypeFromProfile(profile);
       const vibe = vibeFromArchetype(archetype);
+
       el('tarotImg').src = CARD_IMAGE[vibe] || CARD_IMAGE.melancholy_loop;
       const titleOnCard = el('tarotTitleOnCard');
       const explOnCard  = el('tarotExplOnCard');
       if(titleOnCard) titleOnCard.textContent = CARD_TITLE[vibe] || '';
       if(explOnCard)  explOnCard.innerHTML = EXPLANATION_HTML[vibe] || '';
 
+      // projection screen
+      const proj = PROJECTION_DATA[vibe];
+      if(proj){
+        el('projStatement').textContent = proj.statement;
+        el('projQuestion').textContent  = proj.question;
+      }
+
+      // receipts — behavioural record
       const secs = ((Date.now()-state.startedAt)/1000)|0;
-
-      // session id
       el('dossierId').textContent = 'session_id: ' + Math.random().toString(36).slice(2,10).toUpperCase();
-
-      // behavioural record
       el('drPostsServed').textContent  = state.shown.length;
       el('drInteractions').textContent = state.postsInteracted;
       el('drTime').textContent         = secs + 's';
       const scrollPct = state.scrollDepth * 100 | 0;
-      el('drScroll').textContent       = scrollPct + '%';
+      el('drScroll').textContent = scrollPct + '%';
       setTimeout(()=>{ el('drScrollBar').style.width = scrollPct + '%'; }, 120);
 
-      // signals as tags
+      // signals tags
       const tagsEl = el('drTags');
       tagsEl.innerHTML = '';
       const allSignalIds = [...state.signals];
-      SIGNALS.forEach(s => {
+      SIGNALS.forEach(s=>{
         const tag = document.createElement('span');
         tag.className = 'dossier-tag' + (allSignalIds.includes(s.id) ? ' active' : '');
         tag.textContent = s.label;
@@ -1869,62 +2011,50 @@
       const profileLabels = { fool:'reality_filtered', wheel:'desire_engineered', death:'paralysis_induced', tower:'anger_optimised' };
       const rowsEl = el('drProfileRows');
       rowsEl.innerHTML = '';
-      profileKeys.forEach(k => {
-        const seedVal  = (state.seedProfile[k] * 100).toFixed(0);
-        const finalVal = (state.finalProfile[k] * 100).toFixed(0);
+      profileKeys.forEach(k=>{
+        const seedVal  = (state.seedProfile[k]*100).toFixed(0);
+        const finalVal = (state.finalProfile[k]*100).toFixed(0);
         const diff     = finalVal - seedVal;
-        const diffStr  = (diff >= 0 ? '+' : '') + diff + '%';
+        const diffStr  = (diff>=0?'+':'') + diff + '%';
         rowsEl.innerHTML += `
           <div class="dossier-row">
             <span class="dossier-key">${profileLabels[k]}</span>
-            <span class="dossier-val">${seedVal}% → ${finalVal}% <span style="color:rgba(138,92,255,0.8)">(${diffStr})</span></span>
-            <div class="dossier-bar-wrap"><div class="dossier-bar-fill" style="width:${finalVal}%; background:rgba(138,92,255,${0.35 + (finalVal/100)*0.55})"></div></div>
+            <span class="dossier-val">${seedVal}% \u2192 ${finalVal}% <span style="color:rgba(138,92,255,0.8)">(${diffStr})</span></span>
+            <div class="dossier-bar-wrap"><div class="dossier-bar-fill" style="width:${finalVal}%; background:rgba(138,92,255,${0.35+(finalVal/100)*0.55})"></div></div>
           </div>`;
       });
 
-      // personal statements about behaviour
+      // personal statements
       const profileDescriptions = {
         fool:  'you lingered on content about optimism, lightness, and escape from complexity',
         wheel: 'you responded most to posts about status, trends, and the fear of being left behind',
         death: 'you dwelled on content that confirmed feelings of futility, distance, and detachment',
         tower: 'you engaged most with content designed to provoke — conflict, outrage, and collapse',
       };
-      const dominantKeys = profileKeys.slice().sort((a,b) => state.finalProfile[b] - state.finalProfile[a]);
+      const dominantKeys = profileKeys.slice().sort((a,b)=>state.finalProfile[b]-state.finalProfile[a]);
       const statementsEl = document.createElement('div');
-
-      // top 2 dominant traits get personal statements
-      dominantKeys.slice(0,1).forEach(k => {
+      dominantKeys.slice(0,1).forEach(k=>{
         statementsEl.innerHTML += `
           <div class="dossier-statement">
             <span class="stmt-key">observed tendency</span>
             ${profileDescriptions[k]}
           </div>`;
       });
-
-      // passive behaviour callout
-      const wasPassive = state.postsInteracted === 0;
-      const lowInteraction = state.postsInteracted <= 2;
+      const wasPassive   = state.postsInteracted === 0;
+      const lowInteract  = state.postsInteracted <= 2;
       if(wasPassive){
-        statementsEl.innerHTML += `
-          <div class="dossier-passive-note">
-            no explicit interactions recorded — this profile was built entirely from scroll behaviour and dwell time. you did not need to act. presence was enough.
-          </div>`;
-      } else if(lowInteraction){
-        statementsEl.innerHTML += `
-          <div class="dossier-passive-note">
-            minimal explicit interactions recorded — the majority of this profile was inferred from passive behaviour alone. what you paused on mattered more than what you chose.
-          </div>`;
+        statementsEl.innerHTML += `<div class="dossier-passive-note">no explicit interactions recorded \u2014 this profile was built entirely from scroll behaviour and dwell time. you did not need to act. presence was enough.</div>`;
+      } else if(lowInteract){
+        statementsEl.innerHTML += `<div class="dossier-passive-note">minimal explicit interactions recorded \u2014 the majority of this profile was inferred from passive behaviour alone. what you paused on mattered more than what you chose.</div>`;
       }
-
-      // replace the profile inference section with statements
       rowsEl.parentElement.insertBefore(statementsEl, rowsEl);
 
       // feed manipulation record
       const feedShapedEl = el('drFeedShaped');
       feedShapedEl.innerHTML = '';
       const dominant = dominantKeys[0];
-      const dominantFinal = (state.finalProfile[dominant] * 100).toFixed(0);
-      const dominantSeed  = (state.seedProfile[dominant]  * 100).toFixed(0);
+      const dominantFinal = (state.finalProfile[dominant]*100).toFixed(0);
+      const dominantSeed  = (state.seedProfile[dominant]*100).toFixed(0);
       const shapingStatements = {
         fool:  'content promoting positivity, aesthetic pleasure, and frictionless living was progressively amplified in your feed',
         wheel: 'content generating urgency, social comparison, and trend anxiety was progressively amplified in your feed',
@@ -1938,7 +2068,7 @@
         </div>
         <div class="dossier-statement">
           <span class="stmt-key">weight shift</span>
-          your dominant category moved from ${dominantSeed}% at session start to ${dominantFinal}% by the end — a shift driven entirely by your passive engagement
+          your dominant category moved from ${dominantSeed}% at session start to ${dominantFinal}% by the end \u2014 a shift driven entirely by your passive engagement
         </div>
         <div class="dossier-statement">
           <span class="stmt-key">projected outcome</span>
@@ -1951,17 +2081,22 @@
       setTarotFlipped(false);
     }
 
+    // =========================
+    // NAVIGATION
+    // =========================
     el('seeReceipts').addEventListener('click', ()=>{
+      hideAllScreens();
       receipts.classList.remove('hidden');
-      tarotView.classList.add('hidden');
     });
     el('closeReceipts').addEventListener('click', ()=>{
-      receipts.classList.add('hidden');
-      tarotView.classList.remove('hidden');
-      triggerTarotReveal();
+      hideAllScreens();
+      projectionView.classList.remove('hidden');
     });
 
-    el('resetBtn').addEventListener('click', ()=>{
+    el('resetBtn').addEventListener('click', ()=>{ doReset(); });
+    el('projResetBtn').addEventListener('click', ()=>{ doReset(); });
+
+    function doReset(){
       state.signals.clear(); state.selectionOrder = [];
       state.seedProfile = null; state.finalProfile = null;
       state.remainingPool = []; state.shown = []; state.batch = 0;
@@ -1973,26 +2108,25 @@
       cardsHost.querySelectorAll('.signalCard').forEach(b=>b.setAttribute('aria-pressed','false'));
       updateLandingUI();
       document.querySelector('.wrap')?.classList.remove('tarot-mode');
-      tarotView.classList.add('hidden');
-      receipts.classList.add('hidden');
-      feedView.classList.add('hidden');
+      hideAllScreens();
       landing.classList.remove('hidden');
       unlockPageFromFeed();
-      hideTarotBtn();
-    });
+    }
 
     function track(type, detail){
       state.events.push({type, detail, t:Date.now()});
       console.log('[AO]', type, detail||'');
     }
 
-    // ===== TOAST =====
-    const toastEl = document.getElementById('feedToast');
-    const toastTextEl = document.getElementById('toastText');
-    let toastTimer = null;
+    // =========================
+    // TOAST
+    // =========================
+    const toastEl     = el('feedToast');
+    const toastTextEl = el('toastText');
+    let toastTimer    = null;
 
     function showToast(msg, kind='batch', ms=900){
-      if(!toastEl || !toastTextEl) return;
+      if(!toastEl||!toastTextEl) return;
       toastTextEl.textContent = msg;
       toastEl.classList.remove('kind-like','kind-save','kind-batch','kind-dwell');
       toastEl.classList.add(`kind-${kind}`);
@@ -2002,11 +2136,13 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(()=>{
         toastEl.classList.remove('show');
-        setTimeout(()=> toastEl.classList.add('hidden'), 180);
+        setTimeout(()=>toastEl.classList.add('hidden'), 180);
       }, ms);
     }
 
-    // ===== TAROT FLIP =====
+    // =========================
+    // TAROT FLIP
+    // =========================
     function setTarotFlipped(on){
       const card = el('tarotCard');
       if(!card) return;
@@ -2023,7 +2159,7 @@
       if(!card) return;
       card.addEventListener('click', toggleTarotFlip);
       card.addEventListener('keydown', (e)=>{
-        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleTarotFlip(); }
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleTarotFlip(); }
       });
     })();
   </script>
