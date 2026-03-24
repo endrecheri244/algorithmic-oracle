@@ -32,7 +32,7 @@
     }
     html{
       overflow-y: scroll;
-      scrollbar-gutter: stable both-edges;
+      scrollbar-gutter: stable;
     }
     button, input, select, textarea { font-family: inherit; }
     a{color:var(--accent)}
@@ -402,7 +402,6 @@
     #feedView .post .media video{
       width:100%;
       height:auto;
-      max-height:75vw;
       display:block;
       border-radius:8px;
       object-fit:contain;
@@ -493,6 +492,7 @@
 
     /* cinematic title card */
     #systemMessage{
+      display: none;
       position:fixed;
       inset:0;
       display:flex;
@@ -504,6 +504,7 @@
       pointer-events:none;
     }
     #systemMessage.visible{
+      display: flex;
       opacity:1;
     }
     #systemMessage.fade-out{
@@ -2095,6 +2096,7 @@
         overlay.classList.remove('darkening');
         overlay.style.background = 'rgba(0,0,0,0)';
         message.classList.remove('visible','fade-out');
+        message.style.display = 'none';
         revealTarot();
         hideAllScreens();
         document.querySelector('.wrap')?.classList.add('tarot-mode');
