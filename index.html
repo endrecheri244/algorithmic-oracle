@@ -30,10 +30,7 @@
       color:var(--ink);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
-    html{
-      overflow-y: scroll;
-      scrollbar-gutter: stable;
-    }
+    html{ overflow-y: scroll; }
     button, input, select, textarea { font-family: inherit; }
     a{color:var(--accent)}
     .card{background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:16px; box-shadow:0 8px 24px rgba(0,0,0,.06);}
@@ -43,7 +40,6 @@
     .hidden{display:none}
     .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 
-    /* ===== Title ===== */
     header{
       width: 100%;
       display:flex;
@@ -51,18 +47,17 @@
       padding: clamp(16px, 4vw, 28px) 16px clamp(10px, 2vw, 16px);
       position:relative;
       z-index:1;
+      padding-top: calc(clamp(16px, 4vw, 28px) + env(safe-area-inset-top));
     }
     h1.title{
       margin:0;
       display:inline-block;
       text-align:center;
-      /* allow wrapping on small screens */
       white-space: normal;
       word-break: break-word;
       max-width: min(92vw, 1200px);
       font-family:"Cinzel Decorative","Bodoni Moda",serif;
       font-weight:900; letter-spacing:.02em;
-      /* tighter floor so it fits on narrow phones */
       font-size: clamp(24px, 6vw, 60px);
       line-height:1.1;
       color:#FFFFFF;
@@ -72,7 +67,6 @@
         0 0 40px color-mix(in srgb, var(--mystic) 35%, transparent);
     }
 
-    /* ===== Background ===== */
     .bg-stars{
       position: fixed;
       inset: 0;
@@ -88,11 +82,9 @@
       background: radial-gradient(ellipse at 50% 20%, rgba(0,0,0,.10), rgba(0,0,0,.65));
     }
 
-    /* ===== Wrap ===== */
     .wrap{
       max-width: 960px;
       margin: 0 auto;
-      /* reduce side padding on mobile */
       padding: 16px;
       position: relative;
       z-index: 1;
@@ -101,13 +93,12 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom));
     }
 
-    /* ===== Landing ===== */
     #landing{
       width: min(860px, 100%);
       margin: 0 auto;
-      /* reduce top padding on short/mobile screens */
       padding-top: clamp(16px, 6vh, 9vh);
       background:transparent !important;
       border:none !important;
@@ -133,7 +124,6 @@
     @media (max-width:600px){
       .signal-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
     }
-    /* single column only on very narrow (< 360px) */
     @media (max-width:360px){
       .signal-grid{ grid-template-columns: 1fr; }
     }
@@ -147,7 +137,6 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      /* shorter on mobile so grid fits on screen */
       min-height: clamp(72px, 14vw, 112px);
       padding: 12px 10px;
       border-radius: 16px;
@@ -156,7 +145,6 @@
       color:#fff;
       font-weight:800;
       letter-spacing:.04em;
-      /* slightly smaller font on mobile */
       font-size: clamp(13px, 3.2vw, 18px);
       line-height:1.2;
       text-align:center;
@@ -164,12 +152,7 @@
       background: rgba(255,255,255,.045);
       border:1px solid rgba(255,255,255,.12);
       box-shadow: 0 14px 34px rgba(0,0,0,.24);
-      transition:
-        transform .08s ease,
-        box-shadow .18s ease,
-        border-color .18s ease,
-        background .18s ease,
-        filter .18s ease;
+      transition: transform .08s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease, filter .18s ease;
     }
     .signalCard::before{
       content:"";
@@ -180,37 +163,25 @@
       pointer-events:none;
       opacity:.75;
     }
-    .signalCard:hover,
-    .signalCard:focus-visible{
+    .signalCard:hover,.signalCard:focus-visible{
       transform: translateY(-1px);
       outline:none;
       border-color: rgba(255,255,255,.22);
-      box-shadow:
-        0 0 0 6px rgba(255,255,255,.05),
-        0 16px 38px rgba(0,0,0,.28);
+      box-shadow: 0 0 0 6px rgba(255,255,255,.05), 0 16px 38px rgba(0,0,0,.28);
       filter: brightness(1.03) saturate(1.05);
       background:
         radial-gradient(120% 140% at 20% 0%, rgba(255,255,255,.12), transparent 55%),
-        linear-gradient(180deg,
-          color-mix(in srgb, var(--tile) calc(var(--wash)*100%), transparent),
-          color-mix(in srgb, var(--tile) calc((var(--wash)*100%) - 6%), rgba(0,0,0,.34))
-        );
+        linear-gradient(180deg, color-mix(in srgb, var(--tile) calc(var(--wash)*100%), transparent), color-mix(in srgb, var(--tile) calc((var(--wash)*100%) - 6%), rgba(0,0,0,.34)));
     }
     .signalCard[aria-pressed="true"]{
       border-color: rgba(255,255,255,.55);
-      box-shadow:
-        inset 0 0 0 2px rgba(255,255,255,.22),
-        0 18px 44px rgba(0,0,0,.34);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.22), 0 18px 44px rgba(0,0,0,.34);
       transform: translateY(-1px);
       filter: brightness(1.02) saturate(1.10);
       background:
         radial-gradient(120% 140% at 20% 0%, rgba(255,255,255,.12), transparent 55%),
-        linear-gradient(180deg,
-          color-mix(in srgb, var(--tile) 100%, transparent),
-          color-mix(in srgb, var(--tile) 92%, rgba(0,0,0,.26))
-        );
+        linear-gradient(180deg, color-mix(in srgb, var(--tile) 100%, transparent), color-mix(in srgb, var(--tile) 92%, rgba(0,0,0,.26)));
     }
-
     .signalCard.tone-yellow { --tile: var(--yellow); }
     .signalCard.tone-orange { --tile: var(--orange); }
     .signalCard.tone-red    { --tile: var(--red); }
@@ -231,7 +202,6 @@
       align-items:center;
       justify-content:center;
       gap: 12px;
-      /* wrap on tiny screens */
       flex-wrap: wrap;
     }
     #counter{
@@ -244,7 +214,7 @@
       min-width: 120px;
       text-align:left;
     }
-    #counter.ready::after{ content:"  ✦"; opacity:.9; }
+    #counter.ready::after{ content:"  ❆"; opacity:.9; }
 
     .btn{
       appearance:none; border:none; cursor:pointer;
@@ -252,7 +222,6 @@
       font-weight:730;
       letter-spacing:.12em;
       text-transform:capitalize;
-      /* ensure minimum touch target on mobile */
       min-height: 44px;
       min-width: 44px;
     }
@@ -266,26 +235,11 @@
       box-shadow:0 10px 22px rgba(0,0,0,.22);
       transition: transform .12s ease, box-shadow .18s ease, filter .18s ease, opacity .18s ease;
     }
-    #startBtn:disabled{
-      opacity:.35 !important;
-      cursor:not-allowed;
-      box-shadow:none !important;
-      filter: grayscale(.25);
-    }
-    #startBtn:not(:disabled){
-      box-shadow:
-        0 0 0 4px rgba(230,187,61,.18),
-        0 0 26px rgba(230,187,61,.45),
-        0 14px 34px rgba(0,0,0,.32);
-    }
-    #startBtn:not(:disabled):hover,
-    #startBtn:not(:disabled):focus-visible{
-      transform: translateY(-1px);
-      outline:none;
-      box-shadow:
-        0 0 0 5px rgba(230,187,61,.22),
-        0 0 32px rgba(230,187,61,.52),
-        0 18px 40px rgba(0,0,0,.36);
+    #startBtn:disabled{ opacity:.35 !important; cursor:not-allowed; box-shadow:none !important; filter: grayscale(.25); }
+    #startBtn:not(:disabled){ box-shadow: 0 0 0 4px rgba(230,187,61,.18), 0 0 26px rgba(230,187,61,.45), 0 14px 34px rgba(0,0,0,.32); }
+    #startBtn:not(:disabled):hover,#startBtn:not(:disabled):focus-visible{
+      transform: translateY(-1px); outline:none;
+      box-shadow: 0 0 0 5px rgba(230,187,61,.22), 0 0 32px rgba(230,187,61,.52), 0 18px 40px rgba(0,0,0,.36);
     }
     @keyframes startReadyPulse{
       0%   { filter: brightness(1) saturate(1); transform: translateY(0); }
@@ -294,58 +248,32 @@
     }
     #startBtn.ready{ animation: startReadyPulse 520ms ease-out 1; }
 
-    /* Interstitial */
     .interstitial{
-      position: fixed;
-      inset: 0;
-      z-index: 9998;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      pointer-events:none;
+      position: fixed; inset: 0; z-index: 9998;
+      display:none; align-items:center; justify-content:center; pointer-events:none;
     }
     .interstitial .bubble{
-      pointer-events:none;
-      padding: 14px 18px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.22);
-      background: rgba(0,0,0,.35);
-      color:#fff;
-      font-weight: 800;
-      letter-spacing: .10em;
-      text-transform: lowercase;
-      box-shadow: 0 18px 44px rgba(0,0,0,.45);
-      backdrop-filter: blur(6px);
+      pointer-events:none; padding: 14px 18px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.22); background: rgba(0,0,0,.35);
+      color:#fff; font-weight: 800; letter-spacing: .10em; text-transform: lowercase;
+      box-shadow: 0 18px 44px rgba(0,0,0,.45); backdrop-filter: blur(6px);
     }
     .interstitial.show{ display:flex; }
 
-    /* ===== FEED ===== */
     #feedView.card{ background:transparent; border:none; box-shadow:none; padding:0; }
     #feedView:not(.hidden){ display:block; }
     #feedView{ width: min(860px, 100%); }
     #feedView .bar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:8px;
-      /* allow bar items to wrap on very small screens */
-      flex-wrap: wrap;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-bottom:8px; flex-wrap: wrap;
     }
     #feedView .bar > .muted{ color:#D5D9FF; font-size: clamp(12px, 3vw, 14px); }
     .feed{display:grid; gap:12px; padding:8px; overflow:auto}
-    #feedView .feed{
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,.35) transparent;
-    }
+    #feedView .feed{ scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.35) transparent; }
     #feedView .feed::-webkit-scrollbar{ height:10px; width:10px; }
     #feedView .feed::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.35); border-radius:999px; }
 
-    .post{
-      display:grid; gap:8px;
-      padding:14px;
-      border-radius:14px;
-    }
+    .post{ display:grid; gap:8px; padding:14px; border-radius:14px; }
     #feedView .post{
       background:rgba(255,255,255,.08);
       border:1px solid rgba(255,255,255,.18);
@@ -370,16 +298,12 @@
       color:#E8EBFF;
     }
     .badge-link{
-      text-decoration:none;
-      display:inline-block;
+      text-decoration:none; display:inline-block;
       transition:background .15s ease, transform .08s ease, box-shadow .15s ease;
     }
     .badge-link:hover{ background:rgba(255,255,255,.18); }
     .badge-link:active{ transform:translateY(1px); }
-    .badge-link:focus-visible{
-      outline:none;
-      box-shadow:0 0 0 3px rgba(73,151,252,.35);
-    }
+    .badge-link:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(73,151,252,.35); }
 
     .media{
       background:
@@ -393,30 +317,18 @@
       overflow:hidden;
       width:100%;
     }
-    #feedView .post .media img{
-      width:100%;
-      height:auto;
-      display:block;
-      border-radius:8px;
-    }
+    #feedView .post .media img{ width:100%; height:auto; display:block; border-radius:8px; }
     #feedView .post .media video{
-      width:100%;
-      height:auto;
-      display:block;
-      border-radius:8px;
-      object-fit:contain;
-      background:#000;
+      width:100%; height:auto; display:block;
+      border-radius:8px; object-fit:contain; background:#000;
     }
     .mute-toggle{
-      position:absolute;
-      right:8px; bottom:8px;
-      padding:6px 10px;
-      border-radius:999px;
+      position:absolute; right:8px; bottom:8px;
+      padding:6px 10px; border-radius:999px;
       border:1px solid rgba(255,255,255,.45);
       background:rgba(0,0,0,.35);
       color:#fff; font-weight:800; cursor:pointer;
       backdrop-filter: blur(4px);
-      /* bigger touch target on mobile */
       min-width: 44px; min-height: 44px;
       display:flex; align-items:center; justify-content:center;
     }
@@ -424,23 +336,15 @@
 
     .actions{display:flex; gap:8px; flex-wrap: wrap;}
     #feedView .post .actions .btn.secondary{
-      background:rgba(255,255,255,.12);
-      color:#fff;
-      border:1px solid rgba(255,255,255,.25);
-      box-shadow:none;
-      height: 40px;
-      padding: 0 12px;
-      font-size: 13px;
-      letter-spacing: .08em;
-      text-transform: none;
-      border-radius: 12px;
-      font-weight: 800;
+      background:rgba(255,255,255,.12); color:#fff;
+      border:1px solid rgba(255,255,255,.25); box-shadow:none;
+      height: 40px; padding: 0 12px; font-size: 13px;
+      letter-spacing: .08em; text-transform: none;
+      border-radius: 12px; font-weight: 800;
     }
     #feedView .post .actions .btn.secondary:hover,
     #feedView .post .actions .btn.secondary:focus-visible{
-      background:rgba(255,255,255,.22);
-      transform:translateY(-1px);
-      outline:none;
+      background:rgba(255,255,255,.22); transform:translateY(-1px); outline:none;
     }
     #feedView .post .actions [data-act="save"][aria-pressed="true"]{
       background: rgba(255,255,255,.28) !important;
@@ -451,66 +355,41 @@
     }
     #feedView .post .actions [data-act="save"][aria-pressed="true"]::before{ content: "🔖 "; }
 
-    /* Feed scroll lock */
     body.lock-scroll{ overflow:hidden; height:100dvh; }
-    body.lock-scroll > .wrap{
-      height: calc(100dvh - var(--header-h));
-      overflow:hidden;
-      align-items: stretch;
-    }
-    body.lock-scroll #feedView{
-      height:100%;
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-      position:relative;
-    }
+    body.lock-scroll > .wrap{ height: calc(100dvh - var(--header-h)); overflow:hidden; align-items: stretch; }
+    body.lock-scroll #feedView{ height:100%; display:flex; flex-direction:column; min-height:0; position:relative; }
     body.lock-scroll #feedView .feed{
-      flex:1 1 auto;
-      min-height:0;
-      overflow:auto;
-      overscroll-behavior:contain;
-      /* smooth momentum scrolling on iOS */
-      -webkit-overflow-scrolling: touch;
+      flex:1 1 auto; min-height:0; overflow:auto;
+      overscroll-behavior:contain; -webkit-overflow-scrolling: touch;
     }
 
-    /* system takeover overlay */
+    /* system takeover overlay — hidden by default */
     #systemOverlay{
-      position:fixed;
-      inset:0;
-      z-index:99999;
-      background:rgba(0,0,0,0);
+      position:fixed; inset:0; z-index:99999;
+      background:rgba(0,0,0,0.94);
       pointer-events:none;
-      transition: background 2s ease;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display: flex;
+      align-items:center; justify-content:center;
+      opacity: 0;
+      transition: opacity 2s ease;
+      visibility: hidden;
     }
     #systemOverlay.darkening{
-      background:rgba(0,0,0,0.94);
+      opacity: 1;
+      visibility: visible;
     }
 
-    /* cinematic title card */
     #systemMessage{
-      display: none;
-      position:fixed;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 32px;
-      opacity:0;
+      position:fixed; inset:0;
+      display: flex;
+      align-items:center; justify-content:center;
+      padding: 32px; opacity:0;
       transition: opacity 1.6s ease;
       pointer-events:none;
+      visibility: hidden;
     }
-    #systemMessage.visible{
-      display: flex;
-      opacity:1;
-    }
-    #systemMessage.fade-out{
-      opacity:0;
-      transition: opacity 1.2s ease;
-    }
+    #systemMessage.visible{ opacity:1; visibility: visible; }
+    #systemMessage.fade-out{ opacity:0; }
     #systemMessage span{
       font-family:"Cinzel Decorative","Bodoni Moda",serif;
       font-weight:400;
@@ -551,353 +430,151 @@
       flex-wrap: wrap;
       gap: 6px;
     }
-    .dossier-opening-id,
-    .dossier-opening-time{
-      font-size: clamp(10px, 2vw, 12px);
-      letter-spacing: .12em;
-      color: #555;
-    }
-    .dossier-inner{
-      padding: clamp(24px, 4vw, 36px) clamp(24px, 4vw, 36px) clamp(24px, 4vw, 36px);
-    }
-    /* behaviour stats */
-    .dossier-behaviour{
-      display: flex;
-      gap: 36px;
-      flex-wrap: wrap;
-      padding-bottom: 32px;
-      margin-bottom: 36px;
-    }
-    .dossier-stat{
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+    .dossier-opening-id,.dossier-opening-time{ font-size: clamp(10px, 2vw, 12px); letter-spacing: .12em; color: #555; }
+    .dossier-inner{ padding: clamp(24px, 4vw, 36px) clamp(24px, 4vw, 36px) clamp(24px, 4vw, 36px); }
+    .dossier-behaviour{ display: flex; gap: 36px; flex-wrap: wrap; padding-bottom: 32px; margin-bottom: 36px; }
+    .dossier-stat{ display: flex; flex-direction: column; gap: 4px; }
     .dossier-stat-value{
       font-family: "Montserrat", system-ui, sans-serif;
       font-size: clamp(32px, 8vw, 48px);
-      font-weight: 500;
-      color: #2a2a2a;
-      line-height: 1;
+      font-weight: 500; color: #2a2a2a; line-height: 1;
     }
-    .dossier-stat-label{
-      font-size: clamp(9px, 2vw, 10px);
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: #555;
-    }
-    /* block heading (PROFILE INFERENCE, FEED MANIPULATION RECORD) */
-    .dossier-block{
-      padding-bottom: 16px;
-      margin-bottom: 20px;
-    }
-    .dossier-block:last-of-type{
-      margin-bottom: 0;
-    }
+    .dossier-stat-label{ font-size: clamp(9px, 2vw, 10px); letter-spacing: .18em; text-transform: uppercase; color: #555; }
+    .dossier-block{ padding-bottom: 16px; margin-bottom: 20px; }
+    .dossier-block:last-of-type{ margin-bottom: 0; }
     .dossier-block-title{
       font-family: "Courier New", Courier, monospace;
       font-size: clamp(11px, 2.5vw, 13px);
-      font-weight: 700;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: #444;
-      margin-bottom: 16px;
-      padding-bottom: 10px;
+      font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: #444;
+      margin-bottom: 16px; padding-bottom: 10px;
       border-bottom: 1px solid rgba(0,0,0,0.08);
     }
-    /* sub-label inside a block (OBSERVED TENDENCY, SYSTEM RESPONSE etc) */
-    .dossier-label{
-      font-size: clamp(9px, 2vw, 10px);
-      letter-spacing: .16em;
-      text-transform: uppercase;
-      color: #777;
-      display: block;
-      margin-bottom: 6px;
-    }
-    .dossier-text{
-      font-family: "Courier New", Courier, monospace;
-      font-size: clamp(12px, 3vw, 14px);
-      line-height: 1.75;
-      color: #1a1a2e;
-      margin-bottom: 16px;
-    }
+    .dossier-label{ font-size: clamp(9px, 2vw, 10px); letter-spacing: .16em; text-transform: uppercase; color: #777; display: block; margin-bottom: 6px; }
+    .dossier-text{ font-family: "Courier New", Courier, monospace; font-size: clamp(12px, 3vw, 14px); line-height: 1.75; color: #1a1a2e; margin-bottom: 16px; }
     .dossier-text:last-child{ margin-bottom: 0; }
-    /* passive note */
     .dossier-passive{
-      margin-bottom: 16px;
-      padding: 12px 16px;
+      margin-bottom: 16px; padding: 12px 16px;
       border-left: 3px solid rgba(138,92,255,0.55);
       font-family: "Courier New", Courier, monospace;
       font-size: clamp(11px, 2.5vw, 13px);
-      line-height: 1.75;
-      color: #4a2f8a;
+      line-height: 1.75; color: #4a2f8a;
       background: rgba(138,92,255,0.06);
       border-radius: 0 4px 4px 0;
     }
-    /* profile bars */
-    .dossier-profile-row{
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-    }
+    .dossier-profile-row{ display: flex; flex-direction: column; gap: 6px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
     .dossier-profile-row:last-child{ border-bottom: none; margin-bottom: 0; }
-    .dossier-profile-meta{
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-    }
-    .dossier-profile-key{
-      font-size: clamp(10px, 2.5vw, 12px);
-      letter-spacing: .06em;
-      color: #555;
-    }
-    .dossier-profile-val{
-      font-size: clamp(10px, 2.5vw, 12px);
-      color: #1a1a2e;
-    }
-    .dossier-bar-wrap{
-      height: 4px;
-      background: rgba(0,0,0,0.07);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    .dossier-bar-fill{
-      height: 100%;
-      border-radius: 2px;
-      background: rgba(138,92,255,0.65);
-      transition: width 0.8s ease;
-    }
-    /* verdict */
-    .dossier-verdict{
-      padding: 36px 24px;
-      text-align: center;
-      background: #ffffff;
-      border-top: 1px solid rgba(0,0,0,0.08);
-    }
+    .dossier-profile-meta{ display: flex; justify-content: space-between; align-items: baseline; }
+    .dossier-profile-key{ font-size: clamp(10px, 2.5vw, 12px); letter-spacing: .06em; color: #555; }
+    .dossier-profile-val{ font-size: clamp(10px, 2.5vw, 12px); color: #1a1a2e; }
+    .dossier-bar-wrap{ height: 4px; background: rgba(0,0,0,0.07); border-radius: 2px; overflow: hidden; }
+    .dossier-bar-fill{ height: 100%; border-radius: 2px; background: rgba(138,92,255,0.65); transition: width 0.8s ease; }
+    .dossier-verdict{ padding: 36px 24px; text-align: center; background: #ffffff; border-top: 1px solid rgba(0,0,0,0.08); }
     .dossier-verdict-label{
       font-family: "Courier New", Courier, monospace;
       font-size: clamp(11px, 2.5vw, 13px);
-      font-weight: 700;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: #555;
-      margin-bottom: 12px;
-      display: block;
+      font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: #555;
+      margin-bottom: 12px; display: block;
     }
     .dossier-verdict-archetype{
       font-family: "Cinzel Decorative","Bodoni Moda",serif;
       font-size: clamp(20px, 5vw, 28px);
-      letter-spacing: .04em;
-      color: #6c3fcf;
-      line-height: 1.25;
+      letter-spacing: .04em; color: #6c3fcf; line-height: 1.25;
     }
-    .receipts-actions{
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 24px;
-      flex-wrap: wrap;
-    }
+    .receipts-actions{ display: flex; justify-content: center; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
 
     /* ===== PROJECTION SCREEN ===== */
     #projectionView{
-      width: min(640px, 92vw);
-      margin: 0 auto;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      width: min(640px, 92vw); margin: 0 auto;
+      flex-direction: column; align-items: center; justify-content: center;
       min-height: calc(100vh - 160px);
       padding: clamp(32px, 6vw, 64px) 16px;
-      text-align: center;
-      gap: 0;
+      text-align: center; gap: 0;
     }
-    #projectionView:not(.hidden){
-      display: flex;
-    }
-    #projectionView.card.panel{
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-    }
+    #projectionView:not(.hidden){ display: flex; }
+    #projectionView.card.panel{ background: transparent !important; border: none !important; box-shadow: none !important; }
     .proj-eyebrow{
       font-family: "Courier New", Courier, monospace;
       font-size: clamp(10px, 2vw, 12px);
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.75);
-      margin-bottom: 32px;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: rgba(255,255,255,0.75); margin-bottom: 32px;
     }
     .proj-statement{
       font-family: "Montserrat", system-ui, sans-serif;
-      font-size: clamp(13px, 3vw, 16px);
-      font-weight: 600;
-      letter-spacing: .02em;
-      line-height: 1.75;
+      font-size: clamp(13px, 3vw, 16px); font-weight: 600;
+      letter-spacing: .02em; line-height: 1.75;
       color: rgba(220,228,255,0.72);
-      margin-bottom: 52px;
-      max-width: 520px;
+      margin-bottom: 52px; max-width: 520px;
     }
-    .proj-divider{
-      width: 40px;
-      height: 1px;
-      background: rgba(255,255,255,0.20);
-      margin: 0 auto 52px;
-    }
+    .proj-divider{ width: 40px; height: 1px; background: rgba(255,255,255,0.20); margin: 0 auto 52px; }
     .proj-question-label{
       font-family: "Courier New", Courier, monospace;
       font-size: clamp(10px, 2vw, 12px);
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.75);
-      margin-bottom: 14px;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: rgba(255,255,255,0.75); margin-bottom: 14px;
     }
     .proj-question{
       font-family: "Bodoni Moda", Georgia, serif;
-      font-weight: 500;
-      font-style: italic;
+      font-weight: 500; font-style: italic;
       font-size: clamp(18px, 4.5vw, 28px);
-      font-weight: 400;
-      letter-spacing: .02em;
-      line-height: 1.55;
-      color: #ffffff;
-      margin-bottom: 56px;
-      max-width: 480px;
+      letter-spacing: .02em; line-height: 1.55;
+      color: #ffffff; margin-bottom: 56px; max-width: 480px;
     }
-    .proj-actions{
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-    }
+    .proj-actions{ display: flex; flex-direction: column; align-items: center; gap: 14px; }
     .proj-actions .btn-start-over{
       appearance: none;
       border: 1px solid rgba(255,255,255,0.28);
       background: transparent;
       color: rgba(255,255,255,0.65);
       font-family: "Montserrat", system-ui, sans-serif;
-      font-size: clamp(12px, 2.5vw, 14px);
-      font-weight: 700;
-      letter-spacing: .14em;
-      text-transform: lowercase;
-      padding: 12px 28px;
-      border-radius: 999px;
-      cursor: pointer;
+      font-size: clamp(12px, 2.5vw, 14px); font-weight: 700;
+      letter-spacing: .14em; text-transform: lowercase;
+      padding: 12px 28px; border-radius: 999px; cursor: pointer;
       transition: background .18s ease, color .18s ease, border-color .18s ease;
       min-height: 44px;
     }
-    .proj-actions .btn-start-over:hover,
-    .proj-actions .btn-start-over:focus-visible{
-      background: rgba(255,255,255,0.08);
-      color: #fff;
-      border-color: rgba(255,255,255,0.50);
-      outline: none;
-    }
-    .proj-actions .proj-note{
-      font-family: "Courier New", Courier, monospace;
-      font-size: 11px;
-      letter-spacing: .10em;
-      color: rgba(255,255,255,0.22);
-    }
-    .dossier-statement{
-      font-size: clamp(13px, 3vw, 15px);
-      letter-spacing: .03em;
-      line-height: 1.85;
-      color: #1a1a2e;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(0,0,0,0.07);
-    }
-    .dossier-statement:last-child{ border-bottom: none; }
-    .dossier-statement .stmt-key{
-      color: #555566;
-      font-size: clamp(11px, 2.5vw, 12px);
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      display: block;
-      margin-bottom: 6px;
-    }
-    .dossier-passive-note{
-      margin-top: 16px;
-      padding: 16px 20px;
-      border-left: 3px solid rgba(138,92,255,0.75);
-      font-size: clamp(13px, 3vw, 15px);
-      letter-spacing: .03em;
-      line-height: 1.85;
-      color: #4a2f8a;
-      background: rgba(138,92,255,0.08);
-      border-radius: 0 4px 4px 0;
+    .proj-actions .btn-start-over:hover,.proj-actions .btn-start-over:focus-visible{
+      background: rgba(255,255,255,0.08); color: #fff;
+      border-color: rgba(255,255,255,0.50); outline: none;
     }
 
-
-    /* Lightbox */
     .lightbox{
       position:fixed; inset:0; z-index:9999;
       background:rgba(0,0,0,.78);
-      display:flex; align-items:center; justify-content:center;
-      padding:16px;
+      display:flex; align-items:center; justify-content:center; padding:16px;
     }
     .lightbox.hidden{ display:none; }
     .lb-frame{
-      position:relative;
-      width:96vw;
-      height:96dvh;
-      max-width:96vw;
-      max-height:96dvh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:14px;
-      box-shadow:0 20px 60px rgba(0,0,0,.6);
-      background:transparent;
-      overflow:hidden;
+      position:relative; width:96vw; height:96dvh;
+      max-width:96vw; max-height:96dvh;
+      display:flex; align-items:center; justify-content:center;
+      border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.6);
+      background:transparent; overflow:hidden;
     }
     .lb-media{
-      max-width:100%;
-      max-height:100%;
-      width:auto;
-      height:auto;
-      object-fit:contain;
-      display:block;
-      background:#000;
-      border-radius:12px;
+      max-width:100%; max-height:100%; width:auto; height:auto;
+      object-fit:contain; display:block; background:#000; border-radius:12px;
     }
 
-
-    /* Toast */
     .toast{
-      position: fixed;
-      left: 50%;
+      position: fixed; left: 50%;
       bottom: calc(22px + env(safe-area-inset-bottom));
-      transform: translateX(-50%);
-      z-index: 9997;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding: 10px 14px;
-      border-radius: 999px;
+      transform: translateX(-50%); z-index: 9997;
+      display:flex; align-items:center; gap:10px;
+      padding: 10px 14px; border-radius: 999px;
       border: 1px solid rgba(255,255,255,.22);
-      background: rgba(0,0,0,.38);
-      color:#fff;
-      font-weight: 800;
-      letter-spacing: .08em;
-      text-transform: lowercase;
-      font-size: 12px;
+      background: rgba(0,0,0,.38); color:#fff;
+      font-weight: 800; letter-spacing: .08em;
+      text-transform: lowercase; font-size: 12px;
       box-shadow: 0 18px 44px rgba(0,0,0,.45);
       backdrop-filter: blur(6px);
-      opacity: 0;
-      pointer-events: none;
+      opacity: 0; pointer-events: none;
       transition: opacity .16s ease, transform .16s ease;
-      /* prevent toast from being wider than screen */
-      max-width: calc(100vw - 32px);
-      white-space: nowrap;
+      max-width: calc(100vw - 32px); white-space: nowrap;
     }
-    .toast.show{
-      opacity: 1;
-      transform: translateX(-50%) translateY(-2px);
-    }
+    .toast.show{ opacity: 1; transform: translateX(-50%) translateY(-2px); }
     .toast.hidden{ display:none; }
-
     .toast-dot{
       width: 8px; height: 8px; border-radius: 999px;
       background: rgba(255,255,255,.72);
@@ -915,13 +592,8 @@
     .toast.kind-batch .toast-dot{ background: rgba(138,92,255,.95); box-shadow:0 0 14px rgba(138,92,255,.55); }
     .toast.kind-dwell .toast-dot{ background: rgba(173,124,121,.95); box-shadow:0 0 14px rgba(173,124,121,.55); }
 
-    #feed.is-refreshing{
-      opacity: .55;
-      filter: blur(.6px) saturate(.92);
-      transition: opacity 180ms ease, filter 180ms ease;
-    }
+    #feed.is-refreshing{ opacity: .55; filter: blur(.6px) saturate(.92); transition: opacity 180ms ease, filter 180ms ease; }
 
-    /* ===== TAROT ANIMATIONS ===== */
     @keyframes mysticDrift {
       0%   { transform: translateY(0) rotate(-0.6deg) scale(1); }
       40%  { transform: translateY(-16px) rotate(0.6deg) scale(1.008); }
@@ -935,9 +607,7 @@
     }
     @keyframes mysticGlint {
       0%   { transform: translateX(-140%) skewX(-14deg); opacity: 0; }
-      10%  { opacity: .35; }
-      22%  { opacity: .12; }
-      35%  { opacity: 0; }
+      10%  { opacity: .35; } 22%  { opacity: .12; } 35%  { opacity: 0; }
       100% { transform: translateX(160%) skewX(-14deg); opacity: 0; }
     }
     @keyframes mysticReveal {
@@ -947,30 +617,16 @@
     }
 
     .tarot-card{
-      perspective: 1400px;
-      cursor: pointer;
-      user-select: none;
-      position: relative;
-      transform-style: preserve-3d;
-      will-change: transform;
+      perspective: 1400px; cursor: pointer; user-select: none;
+      position: relative; transform-style: preserve-3d; will-change: transform;
     }
     .tarot-inner{
-      width: 100%;
-      height: 100%;
-      position: relative;
+      width: 100%; height: 100%; position: relative;
       transform-style: preserve-3d;
       transition: transform 680ms cubic-bezier(.2,.75,.15,1);
     }
-    .tarot-card.is-flipped .tarot-inner{
-      transform: rotateY(180deg);
-    }
-    .tarot-face{
-      position: absolute;
-      inset: 0;
-      backface-visibility: hidden;
-      border-radius: 22px;
-      overflow: hidden;
-    }
+    .tarot-card.is-flipped .tarot-inner{ transform: rotateY(180deg); }
+    .tarot-face{ position: absolute; inset: 0; backface-visibility: hidden; border-radius: 22px; overflow: hidden; }
     .tarot-front{ transform: rotateY(0deg); }
     .tarot-back{
       transform: rotateY(180deg);
@@ -981,97 +637,53 @@
       border: 1px solid rgba(255,255,255,.14);
     }
     .tarot-back-inner{
-      height:100%;
-      padding: clamp(14px, 3vw, 22px);
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-      color:#E8EBFF;
-      overflow: hidden;
+      height:100%; padding: clamp(14px, 3vw, 22px);
+      display:flex; flex-direction:column; gap: 10px; color:#E8EBFF; overflow: hidden;
     }
     .tarot-back-title{
-      margin:0;
-      font-family:"Cinzel Decorative","Bodoni Moda",serif;
-      font-weight:900;
-      letter-spacing:.02em;
-      font-size: clamp(16px, 4vw, 28px);
-      line-height:1.08;
-      color:#fff;
-      flex-shrink: 0;
-      text-shadow:
-        0 0 10px rgba(138,92,255,.35),
-        0 0 26px rgba(138,92,255,.20);
+      margin:0; font-family:"Cinzel Decorative","Bodoni Moda",serif;
+      font-weight:900; letter-spacing:.02em;
+      font-size: clamp(16px, 4vw, 28px); line-height:1.08;
+      color:#fff; flex-shrink: 0;
+      text-shadow: 0 0 10px rgba(138,92,255,.35), 0 0 26px rgba(138,92,255,.20);
     }
     .tarot-back-body{
-      overflow:auto;
-      -webkit-overflow-scrolling: touch;
-      padding-right: 4px;
-      line-height: 1.55;
+      overflow:auto; -webkit-overflow-scrolling: touch;
+      padding-right: 4px; line-height: 1.55;
       font-size: clamp(12px, 3vw, 15.5px);
-      color: rgba(232,235,255,.92);
-      flex: 1 1 auto;
+      color: rgba(232,235,255,.92); flex: 1 1 auto;
     }
     .tarot-back-body p{ margin:0 0 10px 0; }
     .tarot-back-body p:last-child{ margin-bottom:0; }
-
-    .tarot-card:focus-visible{
-      outline: none;
-      box-shadow: 0 0 0 4px rgba(138,92,255,.28), 0 0 0 8px rgba(255,255,255,.06);
-    }
+    .tarot-card:focus-visible{ outline: none; box-shadow: 0 0 0 4px rgba(138,92,255,.28), 0 0 0 8px rgba(255,255,255,.06); }
 
     .tarot-card::before{
-      content:"";
-      position:absolute;
-      inset:-16px;
-      border-radius: 30px;
+      content:""; position:absolute; inset:-16px; border-radius: 30px;
       background:
         radial-gradient(60% 60% at 50% 35%, rgba(138,92,255,.55), transparent 70%),
         radial-gradient(55% 55% at 20% 80%, rgba(73,151,252,.28), transparent 70%),
         radial-gradient(55% 55% at 85% 75%, rgba(230,187,61,.16), transparent 72%);
-      z-index:-1;
-      opacity:.22;
-      filter: blur(18px);
-      animation: auraBreathe 4.6s ease-in-out infinite;
-      pointer-events:none;
+      z-index:-1; opacity:.22; filter: blur(18px);
+      animation: auraBreathe 4.6s ease-in-out infinite; pointer-events:none;
     }
     .tarot-card::after{
-      content:"";
-      position:absolute;
-      inset:-12%;
-      border-radius: 26px;
-      pointer-events:none;
-      background: linear-gradient(
-        110deg,
-        transparent 25%,
-        rgba(255,255,255,.50) 38%,
-        transparent 58%
-      );
-      mix-blend-mode: screen;
-      opacity: 0;
+      content:""; position:absolute; inset:-12%; border-radius: 26px; pointer-events:none;
+      background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,.50) 38%, transparent 58%);
+      mix-blend-mode: screen; opacity: 0;
       transform: translateX(-140%) skewX(-14deg);
       animation: mysticGlint 8.5s ease-in-out infinite;
     }
-    #tarotView:not(.hidden) .tarot-card{
-      animation: mysticDrift 4.4s ease-in-out infinite;
-    }
+    #tarotView:not(.hidden) .tarot-card{ animation: mysticDrift 4.4s ease-in-out infinite; }
     #tarotView.is-revealing .tarot-card{
-      animation:
-        mysticReveal 560ms cubic-bezier(.2,.9,.2,1) both,
-        mysticDrift 4.4s ease-in-out 560ms infinite;
+      animation: mysticReveal 560ms cubic-bezier(.2,.9,.2,1) both, mysticDrift 4.4s ease-in-out 560ms infinite;
     }
     @media (prefers-reduced-motion: reduce){
-      #tarotView:not(.hidden) .tarot-card,
-      .tarot-card::before,
-      .tarot-card::after,
-      #tarotView.is-revealing .tarot-card{
-        animation: none !important;
-      }
+      #tarotView:not(.hidden) .tarot-card,.tarot-card::before,.tarot-card::after,
+      #tarotView.is-revealing .tarot-card{ animation: none !important; }
     }
 
-    /* ===== TAROT LAYOUT ===== */
     :root{
       --tarot-max: 520px;
-      /* on mobile use more of the screen width */
       --tarot-w: min(var(--tarot-max), 88vw);
       --tarot-title-size: clamp(15px, 3.5vw, 26px);
       --tarot-sub-size:   clamp(12px, 2.5vw, 18px);
@@ -1079,165 +691,43 @@
       --tarot-btn-h:      clamp(40px, 8vw, 56px);
       --tarot-btn-pad-x:  clamp(14px, 3vw, 26px);
     }
-
-    .wrap.tarot-mode{
-      max-width: none !important;
-      width: 100% !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
-
-    #tarotView.card.panel{
-      background: transparent !important;
-      border: 0 !important;
-      box-shadow: none !important;
-      padding: 0 !important;
-      overflow: visible !important;
-    }
+    .wrap.tarot-mode{ max-width: none !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+    #tarotView.card.panel{ background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; overflow: visible !important; }
     #tarotView.card.panel::before{ display:none !important; }
-
-    #tarotView{
-      width: 100% !important;
-      max-width: none !important;
-      margin: 0 !important;
-      align-self: stretch !important;
-    }
-    #tarotView .tarot{
-      width: 100% !important;
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      gap: 12px !important;
-      padding: 0 0 clamp(16px, 4vw, 32px) !important;
-    }
-    #tarotView .tarot-shell,
-    #tarotView .tarot-col{
-      width: 100% !important;
-      max-width: none !important;
-      display: grid !important;
-      justify-items: center !important;
-    }
-
-    #tarotView .tarotTop{
-      width: var(--tarot-w) !important;
-      text-align: center !important;
-      margin: 0 auto clamp(12px, 3vw, 34px);
-    }
+    #tarotView{ width: 100% !important; max-width: none !important; margin: 0 !important; align-self: stretch !important; }
+    #tarotView .tarot{ width: 100% !important; display: flex !important; flex-direction: column !important; align-items: center !important; gap: 12px !important; padding: 0 0 clamp(16px, 4vw, 32px) !important; }
+    #tarotView .tarot-shell,#tarotView .tarot-col{ width: 100% !important; max-width: none !important; display: grid !important; justify-items: center !important; }
+    #tarotView .tarotTop{ width: var(--tarot-w) !important; text-align: center !important; margin: 0 auto clamp(12px, 3vw, 34px); }
     #tarotView .tarotTop-title{
       font-family: "Montserrat", system-ui, sans-serif !important;
-      font-weight: 900 !important;
-      font-size: var(--tarot-title-size);
-      letter-spacing: .22em !important;
-      text-transform: uppercase !important;
+      font-weight: 900 !important; font-size: var(--tarot-title-size);
+      letter-spacing: .22em !important; text-transform: uppercase !important;
       color: #ffffff !important;
-      text-shadow:
-        0 2px 10px rgba(0,0,0,.60),
-        0 0 16px rgba(138,92,255,.55),
-        0 0 34px rgba(138,92,255,.35) !important;
+      text-shadow: 0 2px 10px rgba(0,0,0,.60), 0 0 16px rgba(138,92,255,.55), 0 0 34px rgba(138,92,255,.35) !important;
     }
     #tarotView .tarotTop-sub{
       font-family: "Montserrat", system-ui, sans-serif !important;
-      font-weight: 800 !important;
-      font-size: var(--tarot-sub-size);
-      letter-spacing: .10em !important;
-      text-transform: lowercase !important;
+      font-weight: 800 !important; font-size: var(--tarot-sub-size);
+      letter-spacing: .10em !important; text-transform: lowercase !important;
       color: rgba(233,237,255,.92) !important;
       text-shadow: 0 2px 10px rgba(0,0,0,.55) !important;
     }
-
-    #tarotView .tarot-mat{
-      width: var(--tarot-w) !important;
-      max-width: none !important;
-      padding: 0 !important;
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      display: flex !important;
-      justify-content: center !important;
-    }
-
-    #tarotView .tarot-card{
-      width: var(--tarot-w) !important;
-      max-width: none !important;
-      aspect-ratio: 493 / 700;
-      height: auto !important;
-      border-radius: 22px;
-      overflow: hidden;
-      background: #fff;
-      border: 1px solid rgba(255,255,255,.22);
-      box-shadow: 0 22px 70px rgba(0,0,0,.35);
-      display: block !important;
-      margin: 0 auto !important;
-    }
-
-    #tarotView .tarot-front img{
-      width:100%;
-      height:100%;
-      object-fit: cover;
-      display:block;
-    }
-
-    #tarotView .tarot-actions{
-      width: var(--tarot-w) !important;
-      display:flex;
-      justify-content:center;
-      align-items: center;
-      gap: 10px;
-      margin-top: 12px !important;
-      flex-wrap: wrap;
-    }
-    #tarotView .tarot-actions .btn{
-      font-size: var(--tarot-btn-size) !important;
-      height: var(--tarot-btn-h) !important;
-      padding: 0 var(--tarot-btn-pad-x) !important;
-      border-radius: 999px !important;
-      letter-spacing: .12em !important;
-      font-weight: 900 !important;
-    }
-    #tarotView .tarot-actions .btn.secondary{
-      background: rgba(255,255,255,.14) !important;
-      border: 1px solid rgba(255,255,255,.28) !important;
-      color: #fff !important;
-      text-shadow: 0 2px 10px rgba(0,0,0,.45) !important;
-      backdrop-filter: blur(6px);
-    }
-    #tarotView .tarot-actions .btn.secondary:hover,
-    #tarotView .tarot-actions .btn.secondary:focus-visible{
-      background: rgba(255,255,255,.22) !important;
-      border-color: rgba(255,255,255,.40) !important;
-    }
+    #tarotView .tarot-mat{ width: var(--tarot-w) !important; max-width: none !important; padding: 0 !important; background: transparent !important; border: none !important; box-shadow: none !important; display: flex !important; justify-content: center !important; }
+    #tarotView .tarot-card{ width: var(--tarot-w) !important; max-width: none !important; aspect-ratio: 493 / 700; height: auto !important; border-radius: 22px; overflow: hidden; background: #fff; border: 1px solid rgba(255,255,255,.22); box-shadow: 0 22px 70px rgba(0,0,0,.35); display: block !important; margin: 0 auto !important; }
+    #tarotView .tarot-front img{ width:100%; height:100%; object-fit: cover; display:block; }
+    #tarotView .tarot-actions{ width: var(--tarot-w) !important; display:flex; justify-content:center; align-items: center; gap: 10px; margin-top: 12px !important; flex-wrap: wrap; }
+    #tarotView .tarot-actions .btn{ font-size: var(--tarot-btn-size) !important; height: var(--tarot-btn-h) !important; padding: 0 var(--tarot-btn-pad-x) !important; border-radius: 999px !important; letter-spacing: .12em !important; font-weight: 900 !important; }
+    #tarotView .tarot-actions .btn.secondary{ background: rgba(255,255,255,.14) !important; border: 1px solid rgba(255,255,255,.28) !important; color: #fff !important; text-shadow: 0 2px 10px rgba(0,0,0,.45) !important; backdrop-filter: blur(6px); }
+    #tarotView .tarot-actions .btn.secondary:hover,#tarotView .tarot-actions .btn.secondary:focus-visible{ background: rgba(255,255,255,.22) !important; border-color: rgba(255,255,255,.40) !important; }
     #tarotView .tarot-actions #seeReceipts{
-      background: var(--yellow) !important;
-      color:#000 !important;
-      border: none !important;
-      box-shadow:
-        0 0 0 4px rgba(230,187,61,.18),
-        0 0 26px rgba(230,187,61,.45),
-        0 14px 34px rgba(0,0,0,.32) !important;
+      background: var(--yellow) !important; color:#000 !important; border: none !important;
+      box-shadow: 0 0 0 4px rgba(230,187,61,.18), 0 0 26px rgba(230,187,61,.45), 0 14px 34px rgba(0,0,0,.32) !important;
     }
-    #tarotView .tarot-actions #seeReceipts:hover,
-    #tarotView .tarot-actions #seeReceipts:focus-visible{
-      transform: translateY(-1px);
-      outline: none;
-      box-shadow:
-        0 0 0 5px rgba(230,187,61,.22),
-        0 0 32px rgba(230,187,61,.52),
-        0 18px 40px rgba(0,0,0,.36) !important;
+    #tarotView .tarot-actions #seeReceipts:hover,#tarotView .tarot-actions #seeReceipts:focus-visible{
+      transform: translateY(-1px); outline: none;
+      box-shadow: 0 0 0 5px rgba(230,187,61,.22), 0 0 32px rgba(230,187,61,.52), 0 18px 40px rgba(0,0,0,.36) !important;
     }
-
-    #tarotTitleBelow,
-    #tarotExpl,
-    #tarotView footer.muted{
-      display:none !important;
-    }
-
-    /* ===== SAFE AREA (notch / home indicator) ===== */
-    header {
-      padding-top: calc(clamp(16px, 4vw, 28px) + env(safe-area-inset-top));
-    }
-    .wrap {
-      padding-bottom: calc(16px + env(safe-area-inset-bottom));
-    }
+    #tarotTitleBelow,#tarotExpl,#tarotView footer.muted{ display:none !important; }
   </style>
 </head>
 
@@ -1258,7 +748,7 @@
   </div>
 
   <div id="systemOverlay" aria-hidden="true">
-    <div id="systemMessage"><span>we've seen enough.</span></div>
+    <div id="systemMessage"><span>we’ve seen enough.</span></div>
   </div>
 
   <div class="wrap">
@@ -1278,7 +768,7 @@
         <div class="muted">Now tuning to: <strong id="currentVibeLabel">For You</strong></div>
       </div>
       <div class="feed" id="feed"></div>
-      <footer class="muted">We don't store anything. This session lives in your browser.</footer>
+      <footer class="muted">We don’t store anything. This session lives in your browser.</footer>
     </section>
 
     <!-- TAROT -->
@@ -1333,16 +823,11 @@
     <!-- RECEIPTS -->
     <section id="receipts" class="card panel hidden">
       <div class="dossier">
-
-        <!-- header -->
         <div class="dossier-opening">
           <span class="dossier-opening-id" id="dossierId">session_id: —</span>
           <span class="dossier-opening-time" id="dossierTime">—</span>
         </div>
-
         <div class="dossier-inner">
-
-          <!-- behaviour stats -->
           <div class="dossier-behaviour">
             <div class="dossier-stat">
               <span class="dossier-stat-value" id="drScroll">—</span>
@@ -1353,8 +838,6 @@
               <span class="dossier-stat-label">interactions</span>
             </div>
           </div>
-
-          <!-- profile inference -->
           <div class="dossier-block">
             <div class="dossier-block-title">profile inference</div>
             <span class="dossier-label">observed tendency</span>
@@ -1362,8 +845,6 @@
             <div class="dossier-passive" id="drPassive" style="display:none; margin-bottom:20px;"></div>
             <div id="drProfileRows"></div>
           </div>
-
-          <!-- feed manipulation -->
           <div class="dossier-block">
             <div class="dossier-block-title">feed manipulation record</div>
             <span class="dossier-label">system response</span>
@@ -1371,17 +852,12 @@
             <span class="dossier-label">weight shift</span>
             <div class="dossier-text" id="drWeightShift">—</div>
           </div>
-
         </div>
-
-        <!-- verdict -->
         <div class="dossier-verdict">
           <span class="dossier-verdict-label">classification assigned:</span>
           <div class="dossier-verdict-archetype" id="drArchetype">—</div>
         </div>
-
       </div>
-
       <div class="receipts-actions">
         <button class="btn secondary" id="closeReceipts" style="letter-spacing:.10em; font-size:13px; color:#1a1a2e; border:1px solid rgba(0,0,0,0.25); background:rgba(255,255,255,0.9);">continue</button>
       </div>
@@ -1420,6 +896,7 @@
       isLoadingBatch: false,
       batchDelayMs: 1600,
       takeoverTriggered: false,
+      signalWeights: { fool:0.25, wheel:0.25, death:0.25, tower:0.25 },
     };
 
     const el = id => document.getElementById(id);
@@ -1471,35 +948,35 @@
     // =========================
     const POSTS = {
       live_laugh_leap:[
-        { title:'', body:'tutorial (?) on how to get that extra creamy matcha, the stuff of dreams ⋆.˚˖࿔ ', badge:'', img:'./assets/feed/fool/fool1.mp4', alt:'', creditUrl:'https://www.tiktok.com/@adimatcha/video/7582615121122610453?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
+        { title:'', body:'tutorial (?) on how to get that extra creamy matcha, the stuff of dreams ⭆.˚˗པ ', badge:'', img:'./assets/feed/fool/fool1.mp4', alt:'', creditUrl:'https://www.tiktok.com/@adimatcha/video/7582615121122610453?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'the urge to write everything', badge:'', img:'./assets/feed/fool/fool2.mp4', alt:'', creditUrl:'https://www.tiktok.com/@beccaohlund/video/7580097596073479438?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/fool/fool3.jpg', alt:'', creditUrl:'https://x.com/armaanification/status/1768333367869898836?s=20', creditLabel:'Original post' },
         { title:'', body:'Protecting my peace #selfcare', badge:'', img:'./assets/feed/fool/fool4.mp4', alt:'', creditUrl:'https://www.tiktok.com/@xxlaylax6/video/7617903873348357398?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'kitchen is a work in progress still', badge:'', img:'./assets/feed/fool/fool5.mp4', alt:'', creditUrl:'https://www.tiktok.com/@sierrapetrossi/video/7592760899266514231?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
-        { title:'', body:'#morningroutine #goodmorning #breakfast', badge:'', img:'./assets/feed/fool/fool6.mp4', alt:'', creditUrl:'https://www.tiktok.com/@luvyute/video/7557693058872020246?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
+        { title:'', body:'#morningroutine #goodmorning #breakfast', badge:'Trending among people who romanticise daily life', img:'./assets/feed/fool/fool6.mp4', alt:'', creditUrl:'https://www.tiktok.com/@luvyute/video/7557693058872020246?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/fool/fool7.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
         { title:'', body:'rare morning walk that only comes with not having school for another couple weeks lol this was rlly refreshing 😌', badge:'', img:'./assets/feed/fool/fool8.mp4', alt:'', creditUrl:'https://www.tiktok.com/@thelaststarisinmytummy/video/7279265138572676359?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
-        { title:'', body:'self care that isn\'t skincare <3 ', badge:'', img:'./assets/feed/fool/fool9.mp4', alt:'', creditUrl:'https://www.tiktok.com/@lifewithhopee/video/7476920195978775850?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
+        { title:'', body:'self care that isn\'t skincare <3 ', badge:'Because you engage with self-care content', img:'./assets/feed/fool/fool9.mp4', alt:'', creditUrl:'https://www.tiktok.com/@lifewithhopee/video/7476920195978775850?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'#relatable "poetry', badge:'', img:'./assets/feed/fool/fool10.mp4', alt:'', creditUrl:'https://www.tiktok.com/@thoughts.nextdoor/video/7607520764257963286?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/fool/fool11.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
-        { title:'', body:'˚˖𓍢ִ໋❀ be gentle || #selflove #positivity #quote #beautiful #reminder ||', badge:'', img:'./assets/feed/fool/fool12.mp4', alt:'', creditUrl:'https://www.tiktok.com/@daisyxwinx/video/7592382081443974432?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
+        { title:'', body:'˚˗🜲ִִབྷ be gentle || #selflove #positivity #quote #beautiful #reminder ||', badge:'', img:'./assets/feed/fool/fool12.mp4', alt:'', creditUrl:'https://www.tiktok.com/@daisyxwinx/video/7592382081443974432?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'3 simple things you can do to add more whimsy into your life!', badge:'', img:'./assets/feed/fool/fool13.mp4', alt:'', creditUrl:'https://www.tiktok.com/@karrisnissley/video/7605344552098090254?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
       ],
       fomo_whiplash:[
         { title:'', body:'WOOOOO it\'s been awhile but thrift vlog 😜', badge:'', img:'./assets/feed/wheel/wheel1.mp4', alt:'', creditUrl:'https://www.tiktok.com/@meemooeun/video/7565514794829090066?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/wheel/wheel2.jpg', alt:'', creditUrl:'https://www.instagram.com/p/DV_WvOkFFQC/?utm_source=ig_web_copy_link&igsh=NTc4MTIwNjQ2YQ==', creditLabel:'Original post' },
-        { title:'', body:'and I am so excited and I smell amazing 🩶 deeeep oolong notes, bamboo, Szechuan pepper, roasted tea in 2026 please', badge:'', img:'./assets/feed/wheel/wheel3.mp4', alt:'', creditUrl:'https://www.tiktok.com/@amandasujin/video/7605733799971867918?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
+        { title:'', body:'and I am so excited and I smell amazing 🦦 deeeep oolong notes, bamboo, Szechuan pepper, roasted tea in 2026 please', badge:'', img:'./assets/feed/wheel/wheel3.mp4', alt:'', creditUrl:'https://www.tiktok.com/@amandasujin/video/7605733799971867918?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'Best. Viral. Food. Trend. Ever.', badge:'', img:'./assets/feed/wheel/wheel4.mp4', alt:'', creditUrl:'https://www.tiktok.com/@xoxoannakwan/video/7597530557374942478?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
-        { title:'', body:'Trend report: Save this for later 📂', badge:'', img:'./assets/feed/wheel/wheel5.mp4', alt:'', creditUrl:'https://www.tiktok.com/@jujujucloe/video/7546258355900140820?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
+        { title:'', body:'Trend report: Save this for later 📂', badge:'Trending before it goes mainstream', img:'./assets/feed/wheel/wheel5.mp4', alt:'', creditUrl:'https://www.tiktok.com/@jujujucloe/video/7546258355900140820?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'the colour difference between my monitors now LOL', badge:'', img:'./assets/feed/wheel/wheel6.mp4', alt:'', creditUrl:'https://www.tiktok.com/@cherrii444/video/7479915856693120278?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
-        { title:'', body:'Ive been checking out all of the retro style cafes here in Tokyo, and here are a few of the ones Ive been loving recently.', badge:'', img:'./assets/feed/wheel/wheel7.mp4', alt:'', creditUrl:'https://www.tiktok.com/@shelbyscafediary/video/7592803691288087815?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
+        { title:'', body:'Ive been checking out all of the retro style cafes here in Tokyo, and here are a few of the ones Ive been loving recently.', badge:'Everyone in your area is watching this', img:'./assets/feed/wheel/wheel7.mp4', alt:'', creditUrl:'https://www.tiktok.com/@shelbyscafediary/video/7592803691288087815?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'it\'s always Matcha +Thrifting 🍵 🛒 #explore #shopping #relatable', badge:'', img:'./assets/feed/wheel/wheel8.mp4', alt:'', creditUrl:'https://www.instagram.com/reels/DU17hbfkXkK/', creditLabel:'Original post' },
         { title:'', body:'POV you find THE nyc vintage bag racks 💋🤫 #vintage #bags #bagcollection #purse #shopping', badge:'', img:'./assets/feed/wheel/wheel9.mp4', alt:'', creditUrl:'https://www.instagram.com/reels/DSGGGpbkjdw/', creditLabel:'Original post' },
         { title:'', body:'Slowly, but surely ☕️ #aesthetic #aestheticvideos #aestheticvibes', badge:'', img:'./assets/feed/wheel/wheel10.mp4', alt:'', creditUrl:'https://www.tiktok.com/@jaeinpink/video/7535591583446519070?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'pov: you have enabler friends and a shopping addiction (my credit card statement is looking soooooo bad for this month omg) 😭 #shoppingaddict #shopping #retailthe #besties #prada', badge:'', img:'./assets/feed/wheel/wheel11.mp4', alt:'', creditUrl:'https://www.instagram.com/reels/C7fjlJxAN95/', creditLabel:'Original post' },
-        { title:'', body:'the instant confident boost 😌have you tried these tricks already? ✨', badge:'', img:'./assets/feed/wheel/wheel12.mp4', alt:'', creditUrl:'https://www.tiktok.com/@koocat/video/7610467380765953288?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
+        { title:'', body:'the instant confident boost 😌 have you tried these tricks already? ✨', badge:'', img:'./assets/feed/wheel/wheel12.mp4', alt:'', creditUrl:'https://www.tiktok.com/@koocat/video/7610467380765953288?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'I finally found the viral korean donuts', badge:'', img:'./assets/feed/wheel/wheel13.mp4', alt:'', creditUrl:'https://www.tiktok.com/@janettenguyenn/video/7443706018657471790?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
-        { title:'', body:'dream loft apartments in 2026 >> 💭 don\'t mind my pup Ziggy just chilling there 🐶 #apartmentaesthetic', badge:'', img:'./assets/feed/wheel/wheel14.mp4', alt:'', creditUrl:'https://www.tiktok.com/@eloisepreen/video/7611127590711086358?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
+        { title:'', body:'dream loft apartments in 2026 >> 💭 don\'t mind my pup Ziggy just chilling there 🐶 #apartmentaesthetic', badge:'Viral in your demographic', img:'./assets/feed/wheel/wheel14.mp4', alt:'', creditUrl:'https://www.tiktok.com/@eloisepreen/video/7611127590711086358?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
       ],
       vulnerability_irony:[
         { title:'', body:'not silent enough for me 😔', badge:'', img:'./assets/feed/tower/tower1.mp4', alt:'', creditUrl:'https://www.instagram.com/reels/DV1pXgvklRM/', creditLabel:'Original post' },
@@ -1507,13 +984,13 @@
         { title:'this may sound extreme but I am fundamentally superior to those who watch this', body:'', badge:'', img:'./assets/feed/tower/tower3.jpg', alt:'', creditUrl:'https://x.com/nebsgoodtakes/status/2036017658307703013?s=46', creditLabel:'Original post' },
         { title:'what\'s funny about this answer quickly', body:'', badge:'', img:'./assets/feed/tower/tower4.jpg', alt:'', creditUrl:'https://x.com/phainomenons/status/2035820731045417229?s=46', creditLabel:'Original post' },
         { title:'', body:'I learn so much', badge:'', img:'./assets/feed/tower/tower5.mp4', alt:'', creditUrl:'https://www.tiktok.com/@tiffanytchen/video/7369198840462839083?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
-        { title:'', body:'', badge:'', img:'./assets/feed/tower/tower6.jpg', alt:'', creditUrl:'https://x.com/anamorphisis/status/2036247469542261006?s=46', creditLabel:'Original post' },
+        { title:'', body:'', badge:'Because you engage with discourse', img:'./assets/feed/tower/tower6.jpg', alt:'', creditUrl:'https://x.com/anamorphisis/status/2036247469542261006?s=46', creditLabel:'Original post' },
         { title:'Genuinely watching those ai slop videos with excitement is a sign of low intelligence idc.', body:'', badge:'', img:'./assets/feed/tower/tower7.jpg', alt:'', creditUrl:'https://x.com/xingsyue/status/2035753198368018693?s=46', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/tower/tower8.jpg', alt:'', creditUrl:'https://x.com/lalisattwo/status/2035718487927050444?s=46', creditLabel:'Original post' },
         { title:'', body:'like it\'s none of my business', badge:'', img:'./assets/feed/tower/tower9.mp4', alt:'', creditUrl:'https://www.tiktok.com/@strawhatjulia/video/7565743158437367054?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
-        { title:'', body:'', badge:'', img:'./assets/feed/tower/tower10.jpg', alt:'', creditUrl:'https://x.com/brianatlas/status/2034327725469540736?s=46', creditLabel:'Original post' },
+        { title:'', body:'', badge:'People in your network are talking about this', img:'./assets/feed/tower/tower10.jpg', alt:'', creditUrl:'https://x.com/brianatlas/status/2034327725469540736?s=46', creditLabel:'Original post' },
         { title:'', body:'I met a trained chemist who ended up on the streets after he was laid off. He burned through his savings, couch hopped and finally ended up on the streets.', badge:'', img:'./assets/feed/tower/tower11.mp4', alt:'', creditUrl:'https://www.instagram.com/reels/DVXht2CEQp7/', creditLabel:'Original post' },
-        { title:'', body:'', badge:'', img:'./assets/feed/tower/tower12.jpg', alt:'', creditUrl:'https://x.com/_venusflower_/status/2036116079588622438?s=46', creditLabel:'Original post' },
+        { title:'', body:'', badge:'Because you react to posts like this', img:'./assets/feed/tower/tower12.jpg', alt:'', creditUrl:'https://x.com/_venusflower_/status/2036116079588622438?s=46', creditLabel:'Original post' },
       ],
       melancholy_loop:[
         { title:'been extra hopeless lately', body:'', badge:'', img:'./assets/feed/death/death1.mp4', alt:'', creditUrl:'https://www.tiktok.com/@tojifushiswife/video/7606459481916017934?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
@@ -1521,18 +998,17 @@
         { title:'', body:'', badge:'', img:'./assets/feed/death/death3.mp4', alt:'', creditUrl:'https://www.tiktok.com/@mindfulsources/video/7554521670225005846?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/death/death4.mp4', alt:'', creditUrl:'https://www.tiktok.com/@xinyu.bae/video/7616395548291124494?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/death/death5.jpg', alt:'', creditUrl:'', creditLabel:'Original post' },
-        { title:'', body:'I lost my ability to write, I\'m unsatisfied with everything', badge:'', img:'./assets/feed/death/death6.mp4', alt:'', creditUrl:'https://www.tiktok.com/@philosophydisciple/video/7615422556287421727?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
+        { title:'', body:'I lost my ability to write, I\'m unsatisfied with everything', badge:'Because you watch past midnight', img:'./assets/feed/death/death6.mp4', alt:'', creditUrl:'https://www.tiktok.com/@philosophydisciple/video/7615422556287421727?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'like what are you even saying to me #fyp', badge:'', img:'./assets/feed/death/death7.mp4', alt:'', creditUrl:'https://www.tiktok.com/@kadincespam/video/7551179096206609719?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/death/death8.mp4', alt:'', creditUrl:'https://www.tiktok.com/@no.onewillknow.whoiam/video/7584415117559844116?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'what am even here for #real #fyp', badge:'', img:'./assets/feed/death/death9.mp4', alt:'', creditUrl:'https://www.tiktok.com/@user575198182/video/7593132268974050590?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/death/death10.jpg', alt:'', creditUrl:'https://www.instagram.com/p/DVeoP-KjKjx/?img_index=4&igsh=MWRlY2RxN2lwYzBu', creditLabel:'Original post' },
-        { title:'', body:'double it n give it to the next person🫩 #lol #real #fyp #life', badge:'', img:'./assets/feed/death/death11.mp4', alt:'', creditUrl:'https://www.tiktok.com/@j.jimenez1125/video/7546501868436917534?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
+        { title:'', body:'double it n give it to the next person🪹 #lol #real #fyp #life', badge:'You might relate to this', img:'./assets/feed/death/death11.mp4', alt:'', creditUrl:'https://www.tiktok.com/@j.jimenez1125/video/7546501868436917534?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'i WILL scroll through the entire internet 🥰', badge:'', img:'./assets/feed/death/death12.mp4', alt:'', creditUrl:'https://www.tiktok.com/@kittykittyivy/video/7341890717586853162?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
         { title:'', body:'', badge:'', img:'./assets/feed/death/death13.mp4', alt:'', creditUrl:'https://www.tiktok.com/@eczlipse239/video/7608212425506098440?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
-        { title:'', body:'mom was right, it is that damn phone haha', badge:'', img:'./assets/feed/death/death14.mp4', alt:'', creditUrl:'https://www.tiktok.com/@7_dead_fish/video/7516190445622283526?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
+        { title:'', body:'mom was right, it is that damn phone haha', badge:'Because you paused on similar content', img:'./assets/feed/death/death14.mp4', alt:'', creditUrl:'https://www.tiktok.com/@7_dead_fish/video/7516190445622283526?is_from_webapp=1&sender_device=pc', creditLabel:'Original post' },
       ],
     };
-
     const PROJECTION_DATA = {
       live_laugh_leap: {
         statement: "At your current trajectory, content depicting conflict, hardship, or systemic inequality would represent less than 4% of your feed within 180 days. The algorithm has learned that you prefer not to look.",
@@ -1612,18 +1088,36 @@
       prof.fool /= sum; prof.wheel /= sum; prof.death /= sum; prof.tower /= sum;
     }
     function setProfileFromSignals(){
-      profile.fool = 0.25; profile.wheel = 0.25; profile.death = 0.25; profile.tower = 0.25;
+      // signals only determine content mix — NOT the archetype
+      // store signal weights separately for batch picking
+      state.signalWeights = { fool:0.25, wheel:0.25, death:0.25, tower:0.25 };
       state.signals.forEach(sigId=>{
         const found = SIGNALS.find(s => s.id === sigId);
         const label = found ? found.label : sigId;
         const w = SIGNAL_TO_WEIGHTS[label];
         if(!w) return;
-        profile.fool  += (w.fool  || 0);
-        profile.wheel += (w.wheel || 0);
-        profile.death += (w.death || 0);
-        profile.tower += (w.tower || 0);
+        state.signalWeights.fool  += (w.fool  || 0);
+        state.signalWeights.wheel += (w.wheel || 0);
+        state.signalWeights.death += (w.death || 0);
+        state.signalWeights.tower += (w.tower || 0);
       });
-      normalizeProfile(profile);
+      // normalise signal weights
+      const sw = state.signalWeights;
+      const swSum = sw.fool + sw.wheel + sw.death + sw.tower;
+      sw.fool /= swSum; sw.wheel /= swSum; sw.death /= swSum; sw.tower /= swSum;
+      // amplify for clear initial content mix
+      const cats = ['fool','wheel','death','tower'];
+      const dominant = cats.reduce((a,b)=>sw[a]>sw[b]?a:b);
+      if(sw[dominant] < 0.55){
+        const boost = 0.55 - sw[dominant];
+        cats.filter(k=>k!==dominant).forEach(k=>{ sw[k] = Math.max(0, sw[k] - boost/3); });
+        sw[dominant] = 0.55;
+        const s2 = sw.fool+sw.wheel+sw.death+sw.tower;
+        cats.forEach(k=>sw[k]/=s2);
+      }
+
+      // profile stays completely neutral — archetype determined by behaviour only
+      profile.fool = 0.25; profile.wheel = 0.25; profile.death = 0.25; profile.tower = 0.25;
       state.seedProfile = { ...profile };
     }
 
@@ -1635,54 +1129,43 @@
       return [...pool].sort((a,b)=>scorePost(b,prof)-scorePost(a,prof)).slice(0,n);
     }
 
-    // Batch 1: even mix across all 4 categories, shuffled
+    // helper: get dominant source from profile
+    function getDominantSource(prof){
+      const cats = ['fool','wheel','death','tower'];
+      const dominant = cats.reduce((a,b)=>prof[a]>prof[b]?a:b);
+      return dominant==='fool'?'live_laugh_leap':dominant==='wheel'?'fomo_whiplash':dominant==='death'?'melancholy_loop':'vulnerability_irony';
+    }
+
+    // Batch 1: mix driven by signal weights (landing page choices)
+    // equal-ish spread but reflecting what the user said they wanted
     function pickMixedBatch(pool, n=12){
-      const byCategory = {};
-      pool.forEach(p=>{
-        const cat = p.source;
-        if(!byCategory[cat]) byCategory[cat] = [];
-        byCategory[cat].push(p);
-      });
-      const cats = Object.keys(byCategory);
-      const perCat = Math.ceil(n / cats.length);
+      const sw = state.signalWeights;
+      const sourceMap = { fool:'live_laugh_leap', wheel:'fomo_whiplash', death:'melancholy_loop', tower:'vulnerability_irony' };
       const picked = [];
-      cats.forEach(cat=>{
-        // shuffle each category's posts before picking
-        const shuffled = [...byCategory[cat]].sort(()=>Math.random()-0.5);
-        picked.push(...shuffled.slice(0, perCat));
+      ['fool','wheel','death','tower'].forEach(k=>{
+        const src = sourceMap[k];
+        const count = Math.max(1, Math.round(n * sw[k]));
+        const posts = pool.filter(p=>p.source===src).sort(()=>Math.random()-0.5).slice(0, count);
+        picked.push(...posts);
       });
-      // shuffle the combined result so categories don't appear in blocks
       return picked.sort(()=>Math.random()-0.5).slice(0, n);
     }
 
-    // Batch 2: weighted toward dominant profile but still mixed
+    // Batch 2: driven by actual behaviour profile — starts to narrow
     function pickWeightedBatch(pool, prof, n=12){
-      const cats = ['fool','wheel','death','tower'];
-      // amplify dominant category weight, suppress others
-      const amplified = { ...prof };
-      const dominant = cats.reduce((a,b)=>amplified[a]>amplified[b]?a:b);
-      amplified[dominant] = Math.min(amplified[dominant] * 2.2, 0.75);
-      // renormalise
-      const sum = cats.reduce((s,k)=>s+amplified[k], 0);
-      cats.forEach(k=>amplified[k]/=sum);
-
-      // score and sort with amplified weights
-      const ranked = [...pool].sort((a,b)=>scorePost(b,amplified)-scorePost(a,amplified));
-      // take top scored but ensure at least 1-2 from non-dominant categories
-      const dominantSource = dominant==='fool'?'live_laugh_leap':dominant==='wheel'?'fomo_whiplash':dominant==='death'?'melancholy_loop':'vulnerability_irony';
-      const dominantPosts = ranked.filter(p=>p.source===dominantSource).slice(0, Math.round(n*0.65));
-      const otherPosts    = ranked.filter(p=>p.source!==dominantSource).slice(0, Math.round(n*0.35));
+      const dominantSource = getDominantSource(prof);
+      const dominantPosts = pool.filter(p=>p.source===dominantSource).sort(()=>Math.random()-0.5).slice(0, Math.round(n*0.60));
+      const otherPosts    = pool.filter(p=>p.source!==dominantSource).sort(()=>Math.random()-0.5).slice(0, Math.round(n*0.40));
       return [...dominantPosts, ...otherPosts].sort(()=>Math.random()-0.5).slice(0, n);
     }
 
-    // Batch 3: heavily dominant — ~80% from dominant category, rest mixed in
+    // Batch 3: 100% dominant based on behaviour — fully narrowed
     function pickDominantBatch(pool, prof, n=12){
-      const cats = ['fool','wheel','death','tower'];
-      const dominant = cats.reduce((a,b)=>prof[a]>prof[b]?a:b);
-      const dominantSource = dominant==='fool'?'live_laugh_leap':dominant==='wheel'?'fomo_whiplash':dominant==='death'?'melancholy_loop':'vulnerability_irony';
-      const dominantPosts = pool.filter(p=>p.source===dominantSource).sort(()=>Math.random()-0.5).slice(0, Math.round(n*0.80));
-      const otherPosts    = pool.filter(p=>p.source!==dominantSource).sort(()=>Math.random()-0.5).slice(0, Math.round(n*0.20));
-      return [...dominantPosts, ...otherPosts].sort(()=>Math.random()-0.5).slice(0, n);
+      const dominantSource = getDominantSource(prof);
+      const dominantPosts = pool.filter(p=>p.source===dominantSource).sort(()=>Math.random()-0.5);
+      if(dominantPosts.length >= n) return dominantPosts.slice(0, n);
+      const otherPosts = pool.filter(p=>p.source!==dominantSource).sort(()=>Math.random()-0.5);
+      return [...dominantPosts, ...otherPosts].slice(0, n);
     }
     function updateProfileFromPost(post, strength){
       const t = post.tags || {};
@@ -1795,14 +1278,20 @@
     const lbVid = el('lbVideo');
     const lbImg = el('lbImg');
 
-    function openLightboxVideo(src){
+    function openLightboxVideo(src, currentTime=0){
       if(!src) return;
       lbImg.style.display = 'none';
       lbVid.style.display = 'block';
       lbVid.src = src;
       lb.classList.remove('hidden');
       lbVid.muted = false;
-      lbVid.play().catch(()=>{});
+      // seek to where the feed video was so it plays seamlessly
+      lbVid.addEventListener('loadedmetadata', function seekOnce(){
+        lbVid.currentTime = currentTime;
+        lbVid.play().catch(()=>{});
+        lbVid.removeEventListener('loadedmetadata', seekOnce);
+      });
+      lbVid.load();
       document.addEventListener('keydown', onLbEsc);
     }
     function openLightboxImage(src, alt=''){
@@ -1846,7 +1335,7 @@
       if(state.isLoadingBatch) return;
       if(state.batch >= state.maxBatches) return;
       state.isLoadingBatch = true;
-      showToast('updating your feed\u2026', 'batch', state.batchDelayMs);
+      showToast('updating your feed…', 'batch', state.batchDelayMs);
       const host = el('feed');
       setRefreshing(true);
       host.style.pointerEvents = 'none';
@@ -1933,7 +1422,7 @@
           <div class="avatar" aria-hidden="true"></div>
           <div class="meta">
             <div class="name">${name}</div>
-            <div class="muted" style="color:#D5D9FF;">${time} \u2022 ${badgeHTML}</div>
+            <div class="muted" style="color:#D5D9FF;">${time} • ${badgeHTML}</div>
           </div>
         </div>
         <h4>${p.title||''}</h4>
@@ -2007,22 +1496,28 @@
         });
 
         // unmute when scrolled into view, mute when scrolled away
+        // also track dwell time for profile inference
+        let dwellTimer = null;
         const observer = new IntersectionObserver((entries)=>{
           entries.forEach(entry=>{
             if(entry.isIntersecting){
-              // unmute and play when visible
               videoEl.muted = false;
               videoEl.play().catch(()=>{ videoEl.muted = true; });
               muteBtn.innerHTML = '&#x1F508;';
               muteBtn.setAttribute('title','Mute');
               muteBtn.setAttribute('aria-pressed','true');
+              // start dwell timer — 2s visible = passive engagement signal
+              dwellTimer = setTimeout(()=>{
+                updateProfileFromPost(p, 0.08);
+                track('dwell', {i, id:p.id, prof:{...profile}});
+              }, 3000);
             } else {
-              // mute when out of view
               videoEl.muted = true;
               videoEl.pause();
               muteBtn.innerHTML = '&#x1F507;';
               muteBtn.setAttribute('title','Unmute');
               muteBtn.setAttribute('aria-pressed','false');
+              clearTimeout(dwellTimer);
             }
           });
         }, { threshold: 0.6 });
@@ -2033,9 +1528,24 @@
         const v  = mediaWrap.querySelector('video');
         const im = mediaWrap.querySelector('img');
         if(v){
-          v.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openLightboxVideo(v.currentSrc||v.src); });
+          v.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); v.muted = true; openLightboxVideo(v.currentSrc||v.src, v.currentTime); });
         } else if(im){
           im.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openLightboxImage(im.currentSrc||im.src, im.alt||''); });
+          // dwell tracking for image posts
+          let imgDwellTimer = null;
+          const imgObserver = new IntersectionObserver((entries)=>{
+            entries.forEach(entry=>{
+              if(entry.isIntersecting){
+                imgDwellTimer = setTimeout(()=>{
+                  updateProfileFromPost(p, 0.08);
+                  track('dwell_img', {i, id:p.id, prof:{...profile}});
+                }, 3000);
+              } else {
+                clearTimeout(imgDwellTimer);
+              }
+            });
+          }, { threshold: 0.6 });
+          imgObserver.observe(card);
         }
       }
     }
@@ -2089,12 +1599,18 @@
       document.querySelectorAll('#feed video').forEach(v=>{ v.pause(); });
       const overlay = el('systemOverlay');
       const message = el('systemMessage');
-      overlay.classList.add('darkening');
+      overlay.style.display = 'flex';
+      // allow display to paint before starting transition
+      requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+          overlay.classList.add('darkening');
+        });
+      });
       setTimeout(()=>{ message.classList.add('visible'); }, 1800);
       setTimeout(()=>{ message.classList.add('fade-out'); }, 1800+3000);
       setTimeout(()=>{
         overlay.classList.remove('darkening');
-        overlay.style.background = 'rgba(0,0,0,0)';
+        overlay.style.background = '';
         message.classList.remove('visible','fade-out');
         message.style.display = 'none';
         revealTarot();
@@ -2117,7 +1633,7 @@
     // TAROT
     // =========================
     function fmtProf(p){
-      return `fool ${(p.fool*100).toFixed(0)}% \u00b7 wheel ${(p.wheel*100).toFixed(0)}% \u00b7 death ${(p.death*100).toFixed(0)}% \u00b7 tower ${(p.tower*100).toFixed(0)}%`;
+      return `fool ${(p.fool*100).toFixed(0)}% · wheel ${(p.wheel*100).toFixed(0)}% · death ${(p.death*100).toFixed(0)}% · tower ${(p.tower*100).toFixed(0)}%`;
     }
 
     function revealTarot(){
@@ -2235,6 +1751,12 @@
       state.scrollDepth = 0; state.startedAt = null;
       state.liked = new Set(); state.saved = new Set();
       state.takeoverTriggered = false;
+      state.signalWeights = { fool:0.25, wheel:0.25, death:0.25, tower:0.25 };
+      // reset overlay inline styles so takeover works on next session
+      const overlayEl = el('systemOverlay');
+      const messageEl = el('systemMessage');
+      if(overlayEl){ overlayEl.style.background = ''; overlayEl.classList.remove('darkening'); }
+      if(messageEl){ messageEl.style.display = ''; messageEl.classList.remove('visible','fade-out'); }
       profile.fool = 0.25; profile.wheel = 0.25; profile.death = 0.25; profile.tower = 0.25;
       cardsHost.querySelectorAll('.signalCard').forEach(b=>b.setAttribute('aria-pressed','false'));
       updateLandingUI();
@@ -2291,6 +1813,6 @@
         if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleTarotFlip(); }
       });
     })();
-  </script>
+    </script>
 </body>
 </html>
