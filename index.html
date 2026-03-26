@@ -1395,7 +1395,7 @@
         if(isVideo){
           mediaHTML = `<div class="media"><video src="${src}" autoplay muted loop playsinline preload="auto" webkit-playsinline></video><button class="mute-toggle" aria-pressed="true" title="Mute">&#x1F508;</button></div>`;
         } else {
-          mediaHTML = `<div class="media"><img loading="lazy" src="${src}" alt="${p.alt||''}"></div>`;
+          mediaHTML = `<div class="media"><img loading="eager" src="${src}" alt="${p.alt||''}"></div>`;
         }
       }
       return `
