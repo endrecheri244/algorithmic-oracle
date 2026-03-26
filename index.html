@@ -1477,17 +1477,17 @@
         });
 
         // play/pause + unmute when in view, mute when out
+        // unmute when scrolled into view, mute when scrolled away
         // also track dwell time for profile inference
         let dwellTimer = null;
         const observer = new IntersectionObserver((entries)=>{
           entries.forEach(entry=>{
             if(entry.isIntersecting){
-              // keep muted so autoplay is allowed, user can unmute manually
-              videoEl.muted = true;
-              videoEl.play().catch(()=>{});
-              muteBtn.innerHTML = '&#x1F507;';
-              muteBtn.setAttribute('title','Unmute');
-              muteBtn.setAttribute('aria-pressed','false');
+              videoEl.muted = false;
+              videoEl.play().catch(()=>{ videoEl.muted = true; });
+              muteBtn.innerHTML = '&#x1F508;';
+              muteBtn.setAttribute('title','Mute');
+              muteBtn.setAttribute('aria-pressed','true');
               dwellTimer = setTimeout(()=>{
                 updateProfileFromPost(p, 0.08);
                 track('dwell', {i, id:p.id, prof:{...profile}});
