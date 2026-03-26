@@ -784,7 +784,7 @@
               <div class="tarot-card" id="tarotCard" role="button" tabindex="0" aria-label="Flip tarot card" aria-pressed="false">
                 <div class="tarot-inner">
                   <div class="tarot-face tarot-front">
-                    <img id="tarotImg" src="./assets/cards/death.jpg" alt="Tarot card">
+                    <img id="tarotImg" src="" alt="Tarot card">
                   </div>
                   <div class="tarot-face tarot-back">
                     <div class="tarot-back-inner">
@@ -1607,8 +1607,8 @@
         overlay.style.background = '';
         message.classList.remove('visible','fade-out');
         message.style.display = 'none';
-        revealTarot();
         hideAllScreens();
+        revealTarot();
         document.querySelector('.wrap')?.classList.add('tarot-mode');
         tarotView.classList.remove('hidden');
         triggerTarotReveal();
