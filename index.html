@@ -1393,7 +1393,7 @@
       if(src){
         const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
         if(isVideo){
-          mediaHTML = `<div class="media"><video src="${src}" autoplay muted loop playsinline></video><button class="mute-toggle" aria-pressed="true" title="Mute">&#x1F508;</button></div>`;
+          mediaHTML = `<div class="media"><video data-src="${src}" autoplay muted loop playsinline></video><button class="mute-toggle" aria-pressed="true" title="Mute">&#x1F508;</button></div>`;
         } else {
           mediaHTML = `<div class="media"><img loading="eager" src="${src}" alt="${p.alt||''}"></div>`;
         }
@@ -1483,6 +1483,11 @@
         const observer = new IntersectionObserver((entries)=>{
           entries.forEach(entry=>{
             if(entry.isIntersecting){
+              // lazy-load src only when video enters viewport
+              if(!videoEl.src && videoEl.dataset.src){
+                videoEl.src = videoEl.dataset.src;
+                videoEl.load();
+              }
               videoEl.muted = false;
               videoEl.play().catch(()=>{ videoEl.muted = true; });
               muteBtn.innerHTML = '&#x1F508;';
@@ -1509,7 +1514,7 @@
         const v  = mediaWrap.querySelector('video');
         const im = mediaWrap.querySelector('img');
         if(v){
-          v.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); v.muted = true; openLightboxVideo(v.currentSrc||v.src, v.currentTime); });
+          v.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); v.muted = true; openLightboxVideo(v.currentSrc||v.src||v.dataset.src, v.currentTime); });
         } else if(im){
           im.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openLightboxImage(im.currentSrc||im.src, im.alt||''); });
           // dwell tracking for image posts
