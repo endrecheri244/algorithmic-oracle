@@ -1363,6 +1363,7 @@
     function buildFeed(){
       const host = el('feed');
       host.innerHTML = '';
+      host.scrollTop = 0;
       state.shown = [];
       state.batch = 0;
       state.remainingPool = [...POOL];
