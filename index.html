@@ -1393,7 +1393,7 @@
       if(src){
         const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
         if(isVideo){
-          mediaHTML = `<div class="media"><video src="${src}" autoplay muted loop playsinline preload="auto" webkit-playsinline></video><button class="mute-toggle" aria-pressed="true" title="Mute">&#x1F508;</button></div>`;
+          mediaHTML = `<div class="media"><video src="${src}" autoplay muted loop playsinline></video><button class="mute-toggle" aria-pressed="true" title="Mute">&#x1F508;</button></div>`;
         } else {
           mediaHTML = `<div class="media"><img loading="eager" src="${src}" alt="${p.alt||''}"></div>`;
         }
@@ -1484,8 +1484,6 @@
             if(entry.isIntersecting){
               // always start muted so play() succeeds on iOS
               videoEl.muted = true;
-              // if video hasn't started yet, nudge it with load() first
-              if(videoEl.readyState === 0) videoEl.load();
               const playPromise = videoEl.play();
               if(playPromise !== undefined){
                 playPromise.then(()=>{
