@@ -1482,25 +1482,12 @@
         const observer = new IntersectionObserver((entries)=>{
           entries.forEach(entry=>{
             if(entry.isIntersecting){
-              // always start muted so play() succeeds on iOS
+              // keep muted so autoplay is allowed, user can unmute manually
               videoEl.muted = true;
-              const playPromise = videoEl.play();
-              if(playPromise !== undefined){
-                playPromise.then(()=>{
-                  // play succeeded — now safe to unmute
-                  videoEl.muted = false;
-                  muteBtn.innerHTML = '&#x1F508;';
-                  muteBtn.setAttribute('title','Mute');
-                  muteBtn.setAttribute('aria-pressed','true');
-                }).catch(()=>{
-                  // autoplay blocked — stay muted, show muted icon
-                  videoEl.muted = true;
-                  muteBtn.innerHTML = '&#x1F507;';
-                  muteBtn.setAttribute('title','Unmute');
-                  muteBtn.setAttribute('aria-pressed','false');
-                });
-              }
-              // start dwell timer — 3s visible = passive engagement signal
+              videoEl.play().catch(()=>{});
+              muteBtn.innerHTML = '&#x1F507;';
+              muteBtn.setAttribute('title','Unmute');
+              muteBtn.setAttribute('aria-pressed','false');
               dwellTimer = setTimeout(()=>{
                 updateProfileFromPost(p, 0.08);
                 track('dwell', {i, id:p.id, prof:{...profile}});
@@ -1514,7 +1501,7 @@
               clearTimeout(dwellTimer);
             }
           });
-        }, { threshold: 0.6 });
+        }, { threshold: 0.2 });
         observer.observe(card);
       }
       const mediaWrap = card.querySelector('.media');
@@ -1538,7 +1525,7 @@
                 clearTimeout(imgDwellTimer);
               }
             });
-          }, { threshold: 0.6 });
+          }, { threshold: 0.2 });
           imgObserver.observe(card);
         }
       }
