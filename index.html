@@ -1483,11 +1483,11 @@
         const observer = new IntersectionObserver((entries)=>{
           entries.forEach(entry=>{
             if(entry.isIntersecting){
-              videoEl.muted = false;
-              videoEl.play().catch(()=>{ videoEl.muted = true; });
-              muteBtn.innerHTML = '&#x1F508;';
-              muteBtn.setAttribute('title','Mute');
-              muteBtn.setAttribute('aria-pressed','true');
+              videoEl.muted = true;
+              videoEl.play().catch(()=>{});
+              muteBtn.innerHTML = '&#x1F507;';
+              muteBtn.setAttribute('title','Unmute');
+              muteBtn.setAttribute('aria-pressed','false');
               dwellTimer = setTimeout(()=>{
                 updateProfileFromPost(p, 0.08);
                 track('dwell', {i, id:p.id, prof:{...profile}});
