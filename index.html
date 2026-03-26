@@ -1689,15 +1689,12 @@
       const rowsEl = el('drProfileRows');
       rowsEl.innerHTML = '';
       profileKeys.forEach(k=>{
-        const seedVal  = (state.seedProfile[k]*100).toFixed(0);
         const finalVal = (state.finalProfile[k]*100).toFixed(0);
-        const diff     = finalVal - seedVal;
-        const diffStr  = (diff>=0?'+':'') + diff + '%';
         rowsEl.innerHTML += `
           <div class="dossier-profile-row">
             <div class="dossier-profile-meta">
               <span class="dossier-profile-key">${profileLabels[k]}</span>
-              <span class="dossier-profile-val">${seedVal}% → ${finalVal}% (${diffStr})</span>
+              <span class="dossier-profile-val">${finalVal}%</span>
             </div>
             <div class="dossier-bar-wrap"><div class="dossier-bar-fill" style="width:${finalVal}%"></div></div>
           </div>`;
@@ -1713,7 +1710,7 @@
       const dominantFinal = (state.finalProfile[dominant]*100).toFixed(0);
       const dominantSeed  = (state.seedProfile[dominant]*100).toFixed(0);
       el('drSystemText').textContent  = shapingStatements[dominant];
-      el('drWeightShift').textContent = `your dominant category moved from ${dominantSeed}% at session start to ${dominantFinal}% by the end — a shift driven entirely by your passive engagement.`;
+      el('drWeightShift').textContent = `your dominant signal reached ${dominantFinal}% — inferred entirely from your behaviour in the feed.`;
 
       // verdict
       el('drArchetype').textContent = CARD_TITLE[vibe] || archetype;
