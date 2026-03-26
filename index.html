@@ -1393,9 +1393,9 @@
       if(src){
         const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
         if(isVideo){
-          mediaHTML = `<div class="media"><video data-src="${src}" autoplay muted loop playsinline></video><button class="mute-toggle" aria-pressed="true" title="Mute">&#x1F508;</button></div>`;
+          mediaHTML = `<div class="media"><video src="${src}" autoplay muted loop playsinline></video><button class="mute-toggle" aria-pressed="true" title="Mute">&#x1F508;</button></div>`;
         } else {
-          mediaHTML = `<div class="media"><img loading="eager" src="${src}" alt="${p.alt||''}"></div>`;
+          mediaHTML = `<div class="media"><img data-src="${src}" alt="${p.alt||''}"></div>`;
         }
       }
       return `
@@ -1483,11 +1483,6 @@
         const observer = new IntersectionObserver((entries)=>{
           entries.forEach(entry=>{
             if(entry.isIntersecting){
-              // lazy-load src only when video enters viewport
-              if(!videoEl.src && videoEl.dataset.src){
-                videoEl.src = videoEl.dataset.src;
-                videoEl.load();
-              }
               videoEl.muted = false;
               videoEl.play().catch(()=>{ videoEl.muted = true; });
               muteBtn.innerHTML = '&#x1F508;';
@@ -1506,7 +1501,7 @@
               clearTimeout(dwellTimer);
             }
           });
-        }, { threshold: 0.2 });
+        }, { threshold: 0.1, rootMargin: '0px 0px 200px 0px' });
         observer.observe(card);
       }
       const mediaWrap = card.querySelector('.media');
@@ -1514,14 +1509,18 @@
         const v  = mediaWrap.querySelector('video');
         const im = mediaWrap.querySelector('img');
         if(v){
-          v.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); v.muted = true; openLightboxVideo(v.currentSrc||v.src||v.dataset.src, v.currentTime); });
+          v.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); v.muted = true; openLightboxVideo(v.currentSrc||v.src, v.currentTime); });
         } else if(im){
-          im.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openLightboxImage(im.currentSrc||im.src, im.alt||''); });
-          // dwell tracking for image posts
+          im.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openLightboxImage(im.src||im.dataset.src, im.alt||''); });
+          // lazy-load image src + dwell tracking
           let imgDwellTimer = null;
           const imgObserver = new IntersectionObserver((entries)=>{
             entries.forEach(entry=>{
               if(entry.isIntersecting){
+                // set src only when image enters viewport
+                if(!im.src && im.dataset.src){
+                  im.src = im.dataset.src;
+                }
                 imgDwellTimer = setTimeout(()=>{
                   updateProfileFromPost(p, 0.08);
                   track('dwell_img', {i, id:p.id, prof:{...profile}});
@@ -1530,7 +1529,7 @@
                 clearTimeout(imgDwellTimer);
               }
             });
-          }, { threshold: 0.2 });
+          }, { threshold: 0, rootMargin: '0px 0px 400px 0px' });
           imgObserver.observe(card);
         }
       }
